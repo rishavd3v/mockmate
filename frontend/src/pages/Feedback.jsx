@@ -1,10 +1,10 @@
-import Collapsible from "@/components/Collapsible";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Skeleton from "react-loading-skeleton";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton"
+import AccordionContainer from "@/components/AccordionContainer";
 
 export default function Feedback(){
     const [feedback, setFeedback] = useState();
@@ -12,6 +12,8 @@ export default function Feedback(){
     const [loading, setLoading] = useState(true);
     const { mock_id } = useParams();
     const {user} = useAuth();
+    const location = useLocation();
+    const state = location.state;
 
     const totalRating = feedback?.length>0 && feedback?.reduce((sum, item) => sum + Number(item.rating), 0) || 0;
 
@@ -58,16 +60,45 @@ export default function Feedback(){
                 {<p className="text-sm text-gray-600">Here's your feedback for {mock?.job_pos} mock interview</p>}
             </div>
             {loading?
-                <div>
-                    <Skeleton count={1} className="h-8 mb-2" baseColor="#f3f4f6" highlightColor="#e5e7eb" style={{ borderRadius: '0.5rem' }} />
-                    <Skeleton count={3} className="w-full h-16 mb-3" baseColor="#f3f4f6" highlightColor="#e5e7eb" style={{ borderRadius: '0.5rem' }} />
-                </div> : (<div>
+                <SkeletonCard/> : (<div>
                     <p>Your overall rating: <strong>{totalRating/feedback?.length}/10</strong></p>
-                    {feedback && feedback.map((item, index) => (
-                        <div key={index} ><Collapsible item={item} /></div>
-                    ))}
+                    <div className="space-y-2">
+                        {feedback && feedback.map((item, index) => (
+                            <div key={index} ><AccordionContainer item={item} /></div>
+                        ))}
+                    </div>
                 </div>)
             }
         </div>  
+    )
+}
+
+function SkeletonCard() {
+    return(
+        <div className="flex flex-col gap-2 mt-4">
+            <Skeleton className="mt-1 h-4 w-42 rounded-md" />
+            <div className="space-y-9 mt-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full rounded-2xl" />
+                    <Skeleton className="h-4 w-40 rounded-2xl" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full rounded-2xl" />
+                    <Skeleton className="h-4 w-40 rounded-2xl" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full rounded-2xl" />
+                    <Skeleton className="h-4 w-40 rounded-2xl" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full rounded-2xl" />
+                    <Skeleton className="h-4 w-40 rounded-2xl" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full rounded-2xl" />
+                    <Skeleton className="h-4 w-40 rounded-2xl" />
+                </div>
+            </div>
+        </div>
     )
 }
