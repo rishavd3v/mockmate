@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/Auth/ProtectedRoute';
 import InterviewDashboard from '../pages/InterviewDashboard';
 import Interview from '@/pages/Interview';
 import Feedback from '@/pages/Feedback';
+import Upgrade from '@/pages/Upgrade';
 
 export default function AppRoutes(){
   return(
@@ -15,10 +16,11 @@ export default function AppRoutes(){
         <Route path="/feedback/:mock_id" element={<ProtectedRoute><Feedback/></ProtectedRoute>} />
         <Route path="/interview/:mock_id" element={<ProtectedRoute><InterviewDashboard/></ProtectedRoute>} />
         <Route path="/interview/:mock_id/start" element={<ProtectedRoute><Interview/></ProtectedRoute>} />
+        <Route path="/upgrade" element={<ProtectedRoute><Upgrade/></ProtectedRoute>} />
       </Route>
       <Route path="/signin" element={<Login />} />
       <Route path="*" element={<NotFound/>}/>
-  </Routes>
+    </Routes>
   )
 }
 
