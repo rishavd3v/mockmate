@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getAuth,GoogleAuthProvider, signInWithPopup, signOut, GithubAuthProvider, onAuthStateChanged,deleteUser} from "firebase/auth";
+import { toast } from "sonner";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -26,18 +27,38 @@ export const AuthProvider = ({children}) =>{
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
+            if(currentUser){
+                const userData = {
+                    email: currentUser?.email,
+                    displayName: currentUser?.displayName,
+                    photoURL: currentUser?.photoURL,
+                }
+                localStorage.setItem("user", JSON.stringify(userData));
+            }
+            else{
+                localStorage.removeItem("user");
+            }
             setLoading(false);
         });
         return () => unsubscribe();
     }, []);
 
     const signinWithGoogle = async () => {
-        return await signInWithPopup(auth, googleProvider);
+        try{
+            return await signInWithPopup(auth, googleProvider);
+        }catch(err){
+            toast.error(err.message || "Google sign-in failed!");
+        }
     };
-
+    
     const siginWithGithub = ()=>{
-        signInWithPopup(auth,githubProvider);
+        try{
+            signInWithPopup(auth,githubProvider);
+        }catch(err){
+            toast.error(err.message || "GitHub sign-in failed!");
+        }
     }
+    
     const signoutUser = ()=>{
         signOut(auth);
     }
