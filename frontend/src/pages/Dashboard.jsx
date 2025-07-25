@@ -15,7 +15,7 @@ export default function Dashboard() {
     return(
         <main>
             <div>
-                <h1 className="text-2xl font-semibold">Welcome, {savedUser.displayName} </h1>
+                <h1 className="text-2xl font-semibold">Welcome, {savedUser?.displayName} </h1>
                 <p className="text-sm text-gray-600">Create new mock interview</p>
                 <div className="flex gap-4 text-center">
                     <Button onClick={()=>handleShowDialog("technical")}>Technical Interview</Button>

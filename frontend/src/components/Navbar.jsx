@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
     return(
@@ -35,7 +36,8 @@ function Menu({to,children}){
 }
 
 function AvatarContainer(){
-    const {photoURL} = JSON.parse(localStorage.getItem("user"));
+    const storedUser = localStorage.getItem("user");
+    const {photoURL} = storedUser?JSON.parse(storedUser) : {};
     return(
         <Avatar>
             <AvatarImage src={photoURL}/>
