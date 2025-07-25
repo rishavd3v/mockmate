@@ -1,39 +1,47 @@
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 import { User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function Navbar() {
-    const location = useLocation();
-    const [currentRoute, setCurrentRoute] = useState(location.pathname);
-
-    useEffect(()=>{
-        setCurrentRoute(location.pathname);
-    },[location.pathname]);
-
     return(
         <div className="flex justify-between items-center bg-gray-200 py-4 px-8">
             <Link to={"/dashboard"} className="font-semibold">MOCKMATE</Link>
             <div>
-                <ul className="flex gap-4 text-sm font-semibold cursor-pointer">
-                    <Link to={'/dashboard'} className={`${currentRoute=='/dashboard'&&"text-purple-800"}`}>Dashboard</Link>
-                    <Link to={'/upgrade'}>Upgrade</Link>
-                    <Link to={'/about'}>About</Link>
-                    <Link to={'/contact'}>Contact</Link>
+                <ul className="flex gap-4 text-sm font-semibold cursor-pointer transition-all">
+                    <Menu to={'/dashboard'}>Dashboard</Menu>
+                    <Menu to={'/upgrade'}>Upgrade</Menu>
+                    <Menu to={'/about'}>About</Menu>
+                    <Menu to={'/contact'}>Contact Us</Menu>
                 </ul>
             </div>
             <div>
-                <Link to={'profile'}><Avatar/></Link>
+                <Link to={'profile'}><AvatarContainer/></Link>
             </div>
         </div>
     )
 }
 
-function Avatar(){
-    const {user} = useAuth();
+function Menu({to,children}){
+    const [currentRoute, setCurrentRoute] = useState(location.pathname);
+    
+    useEffect(()=>{
+        setCurrentRoute(location.pathname);
+    },[location.pathname]);
+
     return(
-        <div>
-            {user && user.photoURL ? <img src={user.photoURL} alt="" className={`cursor-pointer aspect-square rounded-full w-8`}/>:<div className='rounded-full aspect-square flex items-center justify-center bg-white p-2'><User size={16}/></div>}            
-        </div>
+        <Link to={to} className={`hover:text-purple-800 transition-colors ${currentRoute==to && "text-purple-800"}`}>{children}</Link>
+    )
+}
+
+function AvatarContainer(){
+    const {photoURL} = JSON.parse(localStorage.getItem("user"));
+    return(
+        <Avatar>
+            <AvatarImage src={photoURL}/>
+            <AvatarFallback><User/></AvatarFallback>
+            <User/>
+        </Avatar>
+      
     )
 }
