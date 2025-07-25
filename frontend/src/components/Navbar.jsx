@@ -40,7 +40,6 @@ function AvatarContainer(){
         <Avatar>
             <AvatarImage src={photoURL}/>
             <AvatarFallback><User/></AvatarFallback>
-            <User/>
         </Avatar>
       
     )
