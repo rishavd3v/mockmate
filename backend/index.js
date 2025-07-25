@@ -1,14 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 const app = express();
-
 import chatRoute from './routes/chat.js';
 import mockRoute from './routes/mock.js';
+import feedbackRoute from './routes/feedback.js';
+import { verifyToken } from './middleware/authMiddleware.js';
 
-app.use(cors({origin:"http://localhost:5173"}));
+app.use(cors({origin:"https://mockmate.rishavdev.tech"}));
 app.use(express.json());
-app.use('/chat',chatRoute);
-app.use('/mock',mockRoute);
+app.use('/chat',verifyToken, chatRoute);
+app.use('/mock',verifyToken, mockRoute);
+app.use('/feedback',verifyToken, feedbackRoute);
 
 app.get('/', (req, res) => {
     res.send('server is running');
