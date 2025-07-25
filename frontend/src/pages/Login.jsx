@@ -1,5 +1,4 @@
 import { Github, UserRound } from "lucide-react";
-import Container from "../components/Container";
 import {useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -30,7 +29,7 @@ export default function Login(){
     },[])
     return(
         <div className="h-screen flex flex-col justify-center items-center">
-            <Container className={""}>
+            <div className="flex flex-col gap-8 items-center px-12 py-6 rounded-md border border-gray-200 min-h-1/2 max-h-3/4 overflow-auto scrollbar-hide shadow">
                 <div className="space-y-2 text-center">
                     <p className="text- font-bold">Sign In to Mockmate</p>
                     <p className="text-xs text-gray-500">Welcome back, please sign-in to continue</p>
@@ -47,10 +46,10 @@ export default function Login(){
                     <Divider/>
                     <Button disabled={true}  className={"hover:bg-gray-700"} onClick={handleGithubSignIn}>
                         <UserRound size={18}/>
-                        <p className="text-sm">Sign In with Google</p>
+                        <p className="text-sm">Sign In as Guest</p>
                     </Button>
                 </div>
-            </Container>
+            </div>
         </div>
     )
 }

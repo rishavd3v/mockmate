@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { Lightbulb, WebcamIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Webcam from "react-webcam";
 import {
     Tooltip,
@@ -13,19 +13,24 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function InterviewDashboard() {
     const mock_id = useParams().mock_id;
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [interviewData, setInterviewData] = useState(null);
     const [webcamEnabled, setWebcamEnabled] = useState(false);
-
+    const location = useLocation();
     const navigate = useNavigate();
     const {user} = useAuth();
+    const state = location.state;
 
     useEffect(()=>{
-        getInterviewDetails();
+        if(state?.interviewData){
+            setInterviewData(state.interviewData);
+        }
+        else getInterviewDetails();
     },[mock_id,user]);
     
     const getInterviewDetails = async () => {
         try{
+            setLoading(true);
             const token = await user.getIdToken();
             const response = await axios.get(`http://localhost:3000/mock/${mock_id}`,{
                 headers:{
@@ -41,19 +46,18 @@ export default function InterviewDashboard() {
     }
 
     return !loading && (
-        <div>
+        <main>
             <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between items-center mt-10">
                 <div>
                     <div>
                         <JobDescription interviewData={interviewData}/>
-                        
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button onClick={()=>webcamEnabled && navigate('start',{state:{interviewData:interviewData}})} size={"sm"} className={`${!webcamEnabled && "opacity-50"}`}>Start Interview</Button>
                             </TooltipTrigger>
                             {!webcamEnabled && <TooltipContent>
-                                <p>Enable Camera & Mic</p>
+                                <p>Enable Camera & Mic first</p>
                             </TooltipContent>}
                         </Tooltip>
                     </div>
@@ -72,7 +76,7 @@ export default function InterviewDashboard() {
                     }
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
 

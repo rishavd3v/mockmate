@@ -12,9 +12,6 @@ export default function Feedback(){
     const [loading, setLoading] = useState(true);
     const { mock_id } = useParams();
     const {user} = useAuth();
-    const location = useLocation();
-    const state = location.state;
-
     const totalRating = feedback?.length>0 && feedback?.reduce((sum, item) => sum + Number(item.rating), 0) || 0;
 
     useEffect(()=>{
@@ -25,7 +22,7 @@ export default function Feedback(){
         try{
             setLoading(true);
             const token = await user?.getIdToken();
-            const feedback = await axios.get(`http://localhost:3000/mock/feedback/${mock_id}`,{
+            const feedback = await axios.get(`http://localhost:3000/feedback/${mock_id}`,{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
@@ -39,6 +36,7 @@ export default function Feedback(){
             setFeedback(feedback.data);
         }
         catch(err){
+            toast.dismiss();
             toast.error("Error fetching feedback");
         }
         setLoading(false);
@@ -75,7 +73,7 @@ export default function Feedback(){
 
 function SkeletonCard() {
     return(
-        <div className="flex flex-col gap-2 mt-4">
+        <main className="flex flex-col gap-2 mt-4">
             <Skeleton className="mt-1 h-4 w-42 rounded-md" />
             <div className="space-y-9 mt-4">
                 <div className="space-y-2">
@@ -99,6 +97,6 @@ function SkeletonCard() {
                     <Skeleton className="h-4 w-40 rounded-2xl" />
                 </div>
             </div>
-        </div>
+        </main>
     )
 }

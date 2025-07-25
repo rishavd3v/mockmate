@@ -13,7 +13,7 @@ export default function Dashboard() {
     }
     
     return(
-        <div>
+        <main>
             <div>
                 <h1 className="text-2xl font-semibold">Welcome, {savedUser.displayName} </h1>
                 <p className="text-sm text-gray-600">Create new mock interview</p>
@@ -29,7 +29,7 @@ export default function Dashboard() {
             <div className="mt-6">
                 <InterviewList/>
             </div>
-        </div>
+        </main>
     )
 }
 
