@@ -6,7 +6,7 @@ import mockRoute from './routes/mock.js';
 import feedbackRoute from './routes/feedback.js';
 import { verifyToken } from './middleware/authMiddleware.js';
 
-app.use(cors());
+app.use(cors({origin: '*'}));
 app.use(express.json());
 app.use('/chat',verifyToken, chatRoute);
 app.use('/mock',verifyToken, mockRoute);
