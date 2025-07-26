@@ -31,11 +31,11 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         let headers = { Authorization: `Bearer ${token}` };
         switch (interviewType) {
             case "technical":
-                url = "http://localhost:3000/chat/technical";
+                url = `${backendUrl}/chat/technical`;
                 data = { jobPos, jobDesc, jobExp, type: interviewType };
                 break;
             case "resume":
-                url = "http://localhost:3000/chat/resume/";
+                url = `${backendUrl}/chat/resume/`;
                 data = new FormData();
                 data.append("resume", resume);
                 data.append("jobPos", jobPos);
@@ -44,11 +44,11 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
                 headers["Content-Type"] = "multipart/form-data";
                 break;
             case "behavioral":
-                url = "http://localhost:3000/chat/behavioral";
+                url = `${backendUrl}/chat/behavioral`;
                 data = { role: jobPos };
                 break;
             case "realtime":
-                url = "http://localhost:3000/chat/realtime";
+                url = `${backendUrl}/chat/realtime`;
                 data = { session_start: new Date().toISOString() };
                 break;
         }
@@ -69,6 +69,8 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         setLoading(false);
         setShowDialog(false);
     };
+    
+    const desc = interviewType==="technical" ? "Add details about job role, job description and your experience level" : interviewType==="resume" ? "Upload your resume and add details about job role and your experience level" : interviewType==="behavioral" ? "Add details about the job role you are applying for" : "Realtime interview will be conducted with a live interviewer";
 
     return (
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -76,7 +78,7 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
             <DialogHeader>
             <DialogTitle>Tell us about your interview</DialogTitle>
             <DialogDescription>
-                Add details about job role, job description, experience level.
+                {desc}
             </DialogDescription>
             </DialogHeader>
             <InputForm

@@ -24,7 +24,7 @@ export default function InterviewCard({interview,setInterviewList}){
         setLoading(true);
         const token = await user?.getIdToken();
         try{
-            const res = await axios.delete(`http://localhost:3000/mock/delete/${mockId}`, {
+            const res = await axios.delete(`${backendUrl}/mock/delete/${mockId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
