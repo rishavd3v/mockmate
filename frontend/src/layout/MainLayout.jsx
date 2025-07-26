@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 const MainLayout = () => (
   <>
     <Navbar/>
-    <main className='px-30 py-10'>
+    <main className='px-10 lg:px-30 py-10'>
       <Outlet />
     </main>
     <Toaster/>

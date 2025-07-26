@@ -28,8 +28,8 @@ export default function Login(){
         }
     },[])
     return(
-        <div className="h-screen flex flex-col justify-center items-center">
-            <div className="flex flex-col gap-8 items-center px-12 py-6 rounded-md border border-gray-200 min-h-1/2 max-h-3/4 overflow-auto scrollbar-hide shadow">
+        <div className="px-8 h-screen flex flex-col justify-center items-center">
+            <div className="flex flex-col justify-center gap-8 items-center px-4 sm:px-12 py-10 rounded-md border border-gray-200 max-h-3/4 overflow-auto scrollbar-hide shadow">
                 <div className="space-y-2 text-center">
                     <p className="text- font-bold">Sign In to Mockmate</p>
                     <p className="text-xs text-gray-500">Welcome back, please sign-in to continue</p>
@@ -64,10 +64,10 @@ function Button({disabled, children, className, onClick}) {
 
 function Divider(){
     return(
-        <div className="flex justify-center items-center gap-4 my-6 w-full">
-            <div className="h-[0.5px] w-full bg-gray-400"></div>
+        <div className="flex justify-center items-center gap-2 my-6 w-full">
+            <div className="h-[0.5px] w-full bg-gray-300"></div>
             <div className="text-xs pb-1">or</div>
-            <div className="h-[0.5px] w-full bg-gray-400"></div>
+            <div className="h-[0.5px] w-full bg-gray-300"></div>
         </div>
     )
 }

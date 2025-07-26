@@ -5,6 +5,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton"
 import AccordionContainer from "@/components/AccordionContainer";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Feedback(){
     const [feedback, setFeedback] = useState();
@@ -22,12 +23,12 @@ export default function Feedback(){
         try{
             setLoading(true);
             const token = await user?.getIdToken();
-            const feedback = await axios.get(`http://localhost:3000/feedback/${mock_id}`,{
+            const feedback = await axios.get(`${backendUrl}/feedback/${mock_id}`,{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
             });
-            const mock = await axios.get(`http://localhost:3000/mock/${mock_id}`,{
+            const mock = await axios.get(`${backendUrl}/mock/${mock_id}`,{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }

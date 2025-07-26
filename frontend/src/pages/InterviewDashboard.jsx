@@ -10,6 +10,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useAuth } from "@/context/AuthContext";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function InterviewDashboard() {
     const mock_id = useParams().mock_id;
@@ -20,7 +21,7 @@ export default function InterviewDashboard() {
     const navigate = useNavigate();
     const {user} = useAuth();
     const state = location.state;
-
+    console.log(user)
     useEffect(()=>{
         if(state?.interviewData){
             setInterviewData(state.interviewData);
@@ -32,7 +33,7 @@ export default function InterviewDashboard() {
         try{
             setLoading(true);
             const token = await user.getIdToken();
-            const response = await axios.get(`http://localhost:3000/mock/${mock_id}`,{
+            const response = await axios.get(`${backendUrl}/mock/${mock_id}`,{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
@@ -45,11 +46,11 @@ export default function InterviewDashboard() {
         setLoading(false);
     }
 
-    return !loading && (
+    return (
         <main>
             <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between items-center mt-10">
-                <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
+                {!loading && <div className="order-2 sm:order-1">
                     <div>
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
@@ -62,9 +63,9 @@ export default function InterviewDashboard() {
                         </Tooltip>
                     </div>
                     <Note/>
-                </div>
+                </div>}
 
-                <div>
+                <div className="order-1 sm:order-2">
                     {webcamEnabled?
                         <div className="flex flex-col items-center justify-center gap-4">
                             <Webcam style={{height:240}} onUserMedia={()=>setWebcamEnabled(true)} onUserMediaError={()=>setWebcamEnabled(false)} mirrored={true}/>
@@ -82,7 +83,7 @@ export default function InterviewDashboard() {
 
 function Note(){
     return(
-        <div className="mt-10 bg-gray-100 p-3 text-sm space-y-3 rounded-md">
+        <div className="mt-4 sm:mt-10 bg-gray-100 p-3 text-sm space-y-3 rounded-md">
             <p className="flex gap-1"><Lightbulb size={18}/>Important Information</p>
             <p>This is a mock interview. Please answer the questions to the best of your ability. Make sure to enable your webcam and microphone before starting the interview.</p>
             <p>This interview will have 5 questions. Answer all the question for accurate analysis. At the end of the interview you will recieve your report.</p>

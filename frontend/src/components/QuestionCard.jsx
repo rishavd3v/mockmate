@@ -32,14 +32,14 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
 
     return (
         <div>
-            <div className="p-4 rounded-md border shadow-md text-sm md:h-96">
-                <div className="grid grid-cols-4 gap-3">
+            <div className="p-4 rounded-md border shadow-md text-sm lg:min-h-96">
+                <div className="flex items-center gap-3 flex-wrap">
                     {question.map((item,index) => (
                     <div
                         key={index}
                         onClick={() => setActiveQuestion(index)}
                         disabled={activeQuestion === index}
-                        className={`flex justify-center gap-2 rounded-full border px-4 py-1 cursor-pointer  ${
+                        className={`flex items-center justify-center gap-2 rounded-full border px-4 py-1 cursor-pointer  ${
                         activeQuestion === index && "bg-blue-400"} ${activeQuestion!=index && "hover:bg-gray-100"}`}
                     >
                         Question {index + 1}
