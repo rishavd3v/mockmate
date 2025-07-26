@@ -54,7 +54,7 @@ export default function InputForm({onSubmit, jobExp, setJobExp, setJobPos, setJo
               <DropdownMenuRadioItem value="Intermediate">
                 Intermediate (2-4 years)
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Experienced">
+              <DropdownMenuRadioItem value="Senior">
                 Senior (4+ years)
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
