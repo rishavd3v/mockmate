@@ -3,11 +3,11 @@ import { pool } from "../utils/db.js";
 async function saveMockData(uid, mock_json, jobPos, jobDesc, jobExp, type) {    
     const technicalQuery = `
         INSERT INTO mock_question (user_id, mock_type, mock_json, job_pos, job_desc, job_exp)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING mock_id;
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING mock_id, job_pos, job_desc, job_exp;
     `;
     const resumeQuery = `
-    INSERT INTO mock_question (user_id, mock_type, mock_json, job_pos, job_exp)
-        VALUES ($1, $2, $3, $4, $5) RETURNING mock_id;
+        INSERT INTO mock_question (user_id, mock_type, mock_json, job_pos, job_exp)
+        VALUES ($1, $2, $3, $4, $5) RETURNING mock_id, job_pos, job_exp;
     `;
     let result;
     if( type == 'technical' ){
@@ -15,7 +15,7 @@ async function saveMockData(uid, mock_json, jobPos, jobDesc, jobExp, type) {
     }else if(type == 'resume' ){
         result = await pool.query(resumeQuery, [uid, "Resume", JSON.stringify(mock_json), jobPos, jobExp]);
     }
-    return result.rows[0].mock_id;
+    return result.rows[0];
 }
 
 async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feedback}){
@@ -46,7 +46,7 @@ async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feed
         }
         return result;
     }
-    catch(error) {
+    catch(error){
         console.error('Error submitting feedback:', error);
         res.status(500).send("Error submitting feedback");
     }

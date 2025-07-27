@@ -41,7 +41,7 @@ export default function Login(){
                     </Button>
                     <Button className={"text-white bg-black hover:bg-gray-700"}>
                         <Github size={18}/>
-                        <p className="text-sm">Sign In with Google</p>
+                        <p className="text-sm">Sign In with GitHub</p>
                     </Button>
                     <Divider/>
                     <Button disabled={true}  className={"hover:bg-gray-700"} onClick={handleGithubSignIn}>

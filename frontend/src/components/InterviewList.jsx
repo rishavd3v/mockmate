@@ -63,14 +63,16 @@ export default function InterviewList(){
 
 function SkeletonCard() {
     return(
-        <div className="flex gap-4 mt-4">
-        <Skeleton className="h-[165px] w-[372px] rounded-md" />
-        <Skeleton className="h-[165px] w-[372px] rounded-md" />
-        <Skeleton className="h-[165px] w-[372px] rounded-md" />
-        {/* <div className="space-y-2">
-            <Skeleton className="h-4 w-[250px]" />
-            <Skeleton className="h-4 w-[200px]" />
-        </div> */}
+        <div className="mt-4">
+            <div className="hidden sm:flex flex-col sm:flex-row gap-4">
+                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
+                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
+                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
+            </div>
+
+            <div className="sm:hidden">
+                <div><Skeleton className="h-[165px] rounded-md" /></div>
+            </div>
         </div>
     )
 }

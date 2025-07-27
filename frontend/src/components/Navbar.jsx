@@ -60,7 +60,9 @@ function AvatarContainer() {
 function MobileMenu() {
     const [open, setOpen] = useState(false);
     const location = useLocation();
-    
+    const storedUser = localStorage.getItem("user");
+    const {displayName, email} = storedUser ? JSON.parse(storedUser) : {};
+
     useEffect(() => {
         setOpen(false);
     }, [location.pathname]);
@@ -76,12 +78,24 @@ function MobileMenu() {
                 <SheetHeader>
                     <Link to={"/dashboard"} className="font-bold text-lg">MOCKMATE</Link>
                 </SheetHeader>
-                <div className="mt-4 flex flex-col justify-center items-center gap-4 font-semibold">
-                    <Link to={'/dashboard'}>Dashboard</Link>
-                    <Link to={'/upgrade'}>Upgrade</Link>
-                    <Link to={'/about'}>About</Link>
-                    <Link to={'/contact'}>Contact Us</Link>
-                    <Link to={'/profile'} className="mt-4"></Link>
+                <div className="flex flex-col justify-between h-full">
+                    <div className="mt-4 flex flex-col justify-center items-center gap-4 font-semibold">
+                        <Link to={'/dashboard'}>Dashboard</Link>
+                        <Link to={'/upgrade'}>Upgrade</Link>
+                        <Link to={'/about'}>About</Link>
+                        <Link to={'/contact'}>Contact Us</Link>
+                        <Link to={'/profile'} className="mt-4"></Link>
+                    </div>
+
+                    <div className="flex items-center gap-2 px-3 py-2 border-t mt-4">
+                        <Link to={'/profile'}>
+                            <AvatarContainer />
+                        </Link>
+                        <div>
+                            <div>{displayName}</div>
+                            <div className="text-sm text-gray-500">{email}</div>
+                        </div>
+                    </div>
                 </div>
             </SheetContent>
         </Sheet>

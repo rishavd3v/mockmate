@@ -19,9 +19,9 @@ router.post('/technical', async (req, res) => {
     const jsonRes = data.replace(/```json/g, '').replace(/```/g, '').trim();
     
     const mock_json = JSON.parse(jsonRes);
-    const savedMockId = await saveMockData(uid, mock_json, jobPos, jobDesc, year, type);
+    const savedData = await saveMockData(uid, mock_json, jobPos, jobDesc, year, type);
 
-    res.send({ mock_id: savedMockId});
+    res.send({ interviewData: savedData});
 });
 
 router.post('/resume', upload.single('resume'), async (req, res) => {
@@ -40,9 +40,9 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
     const jsonRes = data.replace(/```json/g, '').replace(/```/g, '').trim();
     const mock_json = JSON.parse(jsonRes);
 
-    const savedMockId = await saveMockData(uid, mock_json, jobPos, null, year, type);
+    const savedData = await saveMockData(uid, mock_json, jobPos, null, year, type);
 
-    res.send({ mock_id: savedMockId });
+    res.send({ interviewData: savedData });
 });
 
 router.post('/feedback', async (req, res) => {

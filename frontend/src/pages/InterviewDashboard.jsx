@@ -21,7 +21,7 @@ export default function InterviewDashboard() {
     const navigate = useNavigate();
     const {user} = useAuth();
     const state = location.state;
-    console.log(user)
+
     useEffect(()=>{
         if(state?.interviewData){
             setInterviewData(state.interviewData);
@@ -49,8 +49,8 @@ export default function InterviewDashboard() {
     return (
         <main>
             <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
-                {!loading && <div className="order-2 sm:order-1">
+            {!loading  && interviewData && <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
+                <div className="order-2 sm:order-1">
                     <div>
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
@@ -63,7 +63,7 @@ export default function InterviewDashboard() {
                         </Tooltip>
                     </div>
                     <Note/>
-                </div>}
+                </div>
 
                 <div className="order-1 sm:order-2">
                     {webcamEnabled?
@@ -76,7 +76,7 @@ export default function InterviewDashboard() {
                         </div>
                     }
                 </div>
-            </div>
+            </div>}
         </main>
     );
 }
@@ -93,18 +93,19 @@ function Note(){
 }
 
 function JobDescription({interviewData}){
+    const { job_pos, job_desc, job_exp } = interviewData;
     return(
         <div>
             <p className="font-medium">Job Description</p>
             <div className="my-2 text-sm">
             <div className="font-medium">
-                Job Role: <span className="font-normal">{interviewData?.job_pos}</span>
+                Job Role: <span className="font-normal">{job_pos}</span>
             </div>
+            {job_desc && <div className="font-medium">
+                Job description/technologies: <span className="font-normal">{job_desc}</span>
+            </div>}
             <div className="font-medium">
-                Job description/technologies: <span className="font-normal">   {interviewData?.job_desc}</span>
-            </div>
-            <div className="font-medium">
-                Years of experience: <span className="font-normal">{interviewData?.    job_exp}</span></div>
+                Years of experience: <span className="font-normal">{job_exp}</span></div>
             </div>
         </div>
     )
