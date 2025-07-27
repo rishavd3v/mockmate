@@ -6,6 +6,7 @@ import { Mic } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer,setUserAnswer}){
     const {
@@ -79,7 +80,7 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
     }
 
     return(
-        <div className='flex flex-col justify-center items-center gap-4 w-full'>
+        <div className='flex flex-col justify-center items-center gap-4 w-full h-full'>
             <div className='flex justify-center items-center md:w-full w-3/4 h-full p-4 py-8 bg-black rounded-md'>
                 {webcamPermission?
                     (<Webcam onUserMediaError={()=>{setWebcamPermission(false)}} onUserMedia={()=>{setWebcamPermission(true)}} style={{height:250,zIndex:10}} mirrored={true}/>):(<img className='w-48 h-48 absolute' src='/src/assets/webcam.png' alt="" />)

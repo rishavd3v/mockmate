@@ -14,6 +14,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useState } from "react";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 export default function InterviewCard({interview,setInterviewList}){
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -39,6 +41,7 @@ export default function InterviewCard({interview,setInterviewList}){
             toast.error("Error deleting interview. Please try again later.");
         }
         setLoading(false);
+        setShowDeleteDialog(false);
     }
 
     return(

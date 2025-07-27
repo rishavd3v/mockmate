@@ -20,6 +20,7 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const onSubmit = async (e) => {
         setLoading(true);
@@ -54,11 +55,12 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         }
         try{
             const res = await axios.post(url, data, { headers });
-            const mockId = res.data.mock_id;
-
-            if (mockId){
+            const {mock_id,job_pos,job_desc,job_exp} = res.data?.interviewData;
+            
+            console.log("Mock interview generated:", res.data);
+            if (mock_id){
                 setShowDialog(false);
-                navigate(`/interview/${mockId}`);
+                navigate(`/interview/${mock_id}`,{state:{interviewData:{job_pos, job_desc, job_exp}}});
             }
         }catch(err){
             console.error("Error generating mock interview:", err);
