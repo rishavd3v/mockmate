@@ -1,8 +1,10 @@
 import QuestionCard from '@/components/QuestionCard';
 import RecordAnswer from '@/components/RecordAnswer';
+import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Interview() {
@@ -12,7 +14,7 @@ export default function Interview() {
     const [questions,setQuestions] = useState(location.state?.interviewData?.mock_json);
     const [mockId, setMockId] = useState(mock_id);
     const [userAnswer, setUserAnswer] = useState("");
-
+    const {user} = useAuth();
     const [key, setKey] = useState(0);
 
     useEffect(()=>{
@@ -21,9 +23,9 @@ export default function Interview() {
             setData(state);
         }
         else{
-            getInterviewDetails();
+            user && getInterviewDetails();
         }
-    },[]);
+    },[user]);
     
     useEffect(()=>{
         setKey(prev=> prev + 1);
@@ -32,10 +34,16 @@ export default function Interview() {
 
     const getInterviewDetails = async () => {
         try{
-            const response = await axios.get(`${backendUrl}/mock/${mockId}`);
+            const token = await user.getIdToken();
+            const response = await axios.get(`${backendUrl}/mock/${mockId}`,{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
             setData(response.data);
         }
         catch(error){
+            toast("Error fetching interview details. Please try again later.");
             console.error("Error fetching interview:", error);
         }
     }
@@ -49,8 +57,8 @@ export default function Interview() {
             
             <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} setUserAnswer={setUserAnswer}  /></div>
 
-            <div className='order-1 md:order-2'> 
-                <RecordAnswer key={key} question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} userAnswer={userAnswer} setUserAnswer={setUserAnswer} />
+            <div className='order-1 md:order-2'>
+                <RecordAnswer key={key} question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} userAnswer={userAnswer} setUserAnswer={setUserAnswer}/>
             </div>
 
         </div>
