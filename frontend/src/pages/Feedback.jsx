@@ -61,7 +61,7 @@ export default function Feedback(){
             {loading?
                 <SkeletonCard/> : (<div>
                     <p>Your overall rating: <strong>{totalRating/feedback?.length}/10</strong></p>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                         {feedback && feedback.map((item, index) => (
                             <div key={index} ><AccordionContainer item={item} /></div>
                         ))}
