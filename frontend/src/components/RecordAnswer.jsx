@@ -2,7 +2,7 @@ import Webcam from "react-webcam";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import useSpeechToText from "react-hook-speech-to-text";
-import { Mic } from "lucide-react";
+import { LoaderCircle, Mic } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -13,15 +13,16 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
         error,
         isRecording,
         results,
-        interimResult,
         startSpeechToText,
         stopSpeechToText,
+        setResults,
       } = useSpeechToText({
         continuous: true,
         useLegacyResults: false,
     });
     const {user} = useAuth();
     const [webcamPermission, setWebcamPermission] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         {results.map((result) => (
@@ -31,29 +32,39 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
 
     useEffect(() => {
         if(!webcamPermission) {
-            if(!error){
+            if(isRecording){
                 stopSpeechToText();
             }
-            alert("Please allow webcam access to record your answer.");
-            setUserAnswer("");
+            toast.error("Webcam permission required", {
+                description: "Please allow webcam access to record your answer.",
+            });
         }
-    }, [webcamPermission]);
+    }, [webcamPermission,isRecording,stopSpeechToText]);
 
     const handleRecord = async () => {
         speechSynthesis.cancel();
+
         if (!webcamPermission){
-            return toast("Error saving response", {
+            stopSpeechToText();
+            setSaving(false);
+            return toast("Error", {
                 description: "Please enable webcam access to and record again.",
             })
         }
+
         if(isRecording){
             stopSpeechToText();
-            if(userAnswer.length<1){
-                return toast("Error saving response", {
-                    description: "Answer too short, please try again.",
-                })
-            };
+            setSaving(true);
+
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            if(userAnswer.trim() === ""){
+                setSaving(false);
+                return toast.error("No answer recorded",{
+                    description: "Please record your answer before saving.",
+                });
+            }
             try{
+                const token = await user.getIdToken();
                 await axios.post(`${backendUrl}/chat/feedback`, {
                     mock_id:mock_id,
                     ques_no:activeQuestion,
@@ -61,6 +72,11 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
                     ans:question.answer,
                     user_ans:userAnswer,
                     email:user.email,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${await token}`
+                    }
                 });
                 toast.success("Response saved successfully!", {
                     description: "Your answer has been recorded",
@@ -71,9 +87,10 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
                     description: "An error occurred while saving your response. Please try again.",
                 });
             }
-            setUserAnswer("");
+            setSaving(false);
         }
         else {
+            setResults([]);
             setUserAnswer("");
             startSpeechToText();
         }
@@ -83,11 +100,12 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
         <div className='flex flex-col justify-center items-center gap-4 w-full h-full'>
             <div className='flex justify-center items-center md:w-full w-3/4 h-full p-4 py-8 bg-black rounded-md'>
                 {webcamPermission?
-                    (<Webcam onUserMediaError={()=>{setWebcamPermission(false)}} onUserMedia={()=>{setWebcamPermission(true)}} style={{height:250,zIndex:10}} mirrored={true}/>):(<img className='w-48 h-48 absolute' src='/src/assets/webcam.png' alt="" />)
+                    (<Webcam onUserMediaError={()=>{setWebcamPermission(false)}} onUserMedia={()=>{setWebcamPermission(true)}} style={{height:250,zIndex:10}} mirrored={true}/>) : (<img className='sm:w-40 sm:h-40 h-30 w-30' src='/src/assets/webcam.png' alt="" />)
                 }
             </div>
+
             <Button onClick={handleRecord}>
-                {isRecording?<h2 className="flex items-center gap-1 text-red-500"><Mic/>Stop Recording</h2>:"Record Answer"}
+                {saving?<p className="flex gap-1 items-center"><LoaderCircle className="animate-spin"/>Saving</p>:isRecording ? <h2 className="flex items-center gap-1 text-red-500"><Mic/>Stop Recording</h2>:"Record Answer"}
             </Button>
 
             {error && <p className="text-red-500">Error: {error}</p>}
