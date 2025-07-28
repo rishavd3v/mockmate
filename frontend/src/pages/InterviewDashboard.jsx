@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Lightbulb, WebcamIcon } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Webcam from "react-webcam";
@@ -49,7 +49,7 @@ export default function InterviewDashboard() {
     return (
         <main>
             <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
-            {!loading  && interviewData && <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
+            {!loading  && interviewData && <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
                 <div className="order-2 sm:order-1">
                     <div>
                         <JobDescription interviewData={interviewData}/>
