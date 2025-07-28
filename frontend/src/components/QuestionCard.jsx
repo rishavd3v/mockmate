@@ -45,10 +45,10 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
                         Question {index + 1}
                     </div>
                     ))}
-                </div>
-                <div className="my-6 space-y-2">
-                    <p className="font-medium text-base">{question[activeQuestion]?.question}</p>
-                    <Volume2 className="cursor-pointer" size={18} onClick={textToSpeech}/>
+                    <div className="my-6 space-y-2">
+                        <p className="font-medium text-base">{question[activeQuestion]?.question}</p>
+                        <Volume2 className="cursor-pointer" size={18} onClick={textToSpeech}/>
+                    </div>
                 </div>
 
                 <div className="p-4 bg-blue-200 text-blue-800 mt-10 rounded-md space-y-2 text-sm">
