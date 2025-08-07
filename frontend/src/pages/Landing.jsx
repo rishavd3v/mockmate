@@ -8,7 +8,7 @@ export default function Landing() {
     return (
         <>
             <GridBackground />
-            <main className="absolute md:px-30 px-4">
+            <main className="absolute lg:px-30 px-4">
                 <motion.div className="h-screen flex flex-col gap-8 justify-center items-center text-center" initial="hidden" animate="visible"
                     variants={{
                     hidden: {},
@@ -30,7 +30,7 @@ export default function Landing() {
                         <HeroHighlightDemo />
                     </motion.div>
 
-                    <motion.div className="text-lg text-gray-600 md:px-50" variants={fadeUp}>
+                    <motion.div className="text-lg text-gray-600 lg:px-50" variants={fadeUp}>
                         Practice technical, behavioral, and resume-based interviews with our advanced AI. Get real-time feedback and boost your confidence before the big day.
                     </motion.div>
 
