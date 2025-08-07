@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { HeroHighlight, Highlight } from "./ui/hero-highlight.jsx";
 
 export function HeroHighlightDemo() {

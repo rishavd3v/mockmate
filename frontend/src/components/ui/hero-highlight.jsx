@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useMotionValue, motion, useMotionTemplate } from "motion/react";
+import { motion} from "motion/react";
 import React from "react";
 
 export const HeroHighlight = ({
@@ -33,7 +33,7 @@ export const Highlight = ({
         backgroundSize: "100% 100%",
       }}
       transition={{
-        duration: 2,
+        duration: 1.5,
         ease: "linear",
         delay: 0.5,
       }}
