@@ -23,7 +23,7 @@ export default function Landing() {
                         className="flex gap-2 items-center text-sm rounded-full bg-white border border-gray-300 shadow px-3 py-1"
                         variants={fadeUp}>
                         <div className="h-1 w-1 rounded-full bg-green-400"></div>
-                        <p>Currently available for beta users</p>
+                        <p>Currently under development</p>
                     </motion.div>
 
                     <motion.div className="text-7xl font-bold md:px-20" variants={fadeUp}>
