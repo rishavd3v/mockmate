@@ -30,7 +30,8 @@ export default function Login(){
     return(
         <div className="px-8 h-screen flex flex-col justify-center items-center">
             <div className="flex flex-col justify-center gap-8 items-center px-4 sm:px-12 py-10 rounded-md border border-gray-200 max-h-3/4 overflow-auto scrollbar-hide shadow">
-                <div className="space-y-2 text-center">
+                <div className="flex flex-col items-center space-y-2 text-center">
+                    <img className="h-10 object-center object-cover w-min" src="favicon.png" alt="" />
                     <p className="text- font-bold">Sign In to Mockmate</p>
                     <p className="text-xs text-gray-500">Welcome back, please sign-in to continue</p>
                 </div>
