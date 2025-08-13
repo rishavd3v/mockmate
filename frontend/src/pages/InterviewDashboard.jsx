@@ -55,7 +55,7 @@ export default function InterviewDashboard() {
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button onClick={()=>webcamEnabled && navigate('start',{state:{interviewData:interviewData}})} size={"sm"} className={`${!webcamEnabled && "opacity-50"}`}>Start Interview</Button>
+                                <Button disabled={!webcamEnabled} onClick={()=>navigate('start',{state:{interviewData:interviewData}})} size={"sm"}>Start Interview</Button>
                             </TooltipTrigger>
                             {!webcamEnabled && <TooltipContent>
                                 <p>Enable Camera & Mic first</p>

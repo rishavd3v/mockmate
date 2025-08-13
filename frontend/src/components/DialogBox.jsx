@@ -55,12 +55,11 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         }
         try{
             const res = await axios.post(url, data, { headers });
-            const {mock_id,job_pos,job_desc,job_exp} = res.data?.interviewData;
+            const {mock_id,job_pos,job_desc,job_exp,mock_json} = res.data?.interviewData;
             
-            console.log("Mock interview generated:", res.data);
             if (mock_id){
                 setShowDialog(false);
-                navigate(`/interview/${mock_id}`,{state:{interviewData:{job_pos, job_desc, job_exp}}});
+                navigate(`/interview/${mock_id}`,{state:{interviewData:{job_pos, job_desc, job_exp,mock_json}}});
             }
         }catch(err){
             console.error("Error generating mock interview:", err);
