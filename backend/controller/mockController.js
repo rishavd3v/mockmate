@@ -15,7 +15,6 @@ async function saveMockData(uid, mock_json, jobPos, jobDesc, jobExp, type) {
     }else if(type == 'resume' ){
         result = await pool.query(resumeQuery, [uid, "Resume", JSON.stringify(mock_json), jobPos, jobExp]);
     }
-    console.log("Mock data saved successfully:", result.rows[0]);
     return result.rows[0];
 }
 
