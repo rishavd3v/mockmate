@@ -1,68 +1,61 @@
 import Webcam from "react-webcam";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import useSpeechToText from "react-hook-speech-to-text";
+// import useSpeechToText from "react-hook-speech-to-text";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { LoaderCircle, Mic } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer,setUserAnswer}){
-    const {
-        error,
-        isRecording,
-        results,
-        startSpeechToText,
-        stopSpeechToText,
-        setResults,
-      } = useSpeechToText({
-        continuous: true,
-        useLegacyResults: false,
-    });
+export default function RecordAnswer({question,activeQuestion,mock_id}){
+    const{
+        transcript,
+        listening,
+        resetTranscript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition({continuous: true});
+    
+    if(!browserSupportsSpeechRecognition){
+        return <span>Your browser does not support speech recognition.</span>;
+    }
+
     const {user} = useAuth();
+    const [micPermission, setMicPermission] = useState(true);
     const [webcamPermission, setWebcamPermission] = useState(true);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        {results.map((result) => (
-            setUserAnswer((prev) => prev+result?.transcript)
-        ))}
-    },[results]);
-
-    useEffect(() => {
-        if(!webcamPermission) {
-            if(isRecording){
-                stopSpeechToText();
-            }
-            toast.error("Webcam permission required", {
-                description: "Please allow webcam access to record your answer.",
-            });
+        try{
+            navigator.mediaDevices.getUserMedia({ audio: true })
+            setMicPermission(true);
         }
-    }, [webcamPermission,isRecording,stopSpeechToText]);
+        catch{
+            setMicPermission(false);
+            toast.error("Microphone permission required", {
+                description: "Please allow microphone access to record your answer.",
+            });
+        };
+    }, []);
+    
+    const startListening=()=>{
+        SpeechRecognition.startListening({
+          continuous: true,
+          interimResults: true,
+          language: "en-US"
+        });
+    };
 
     const handleRecord = async () => {
         speechSynthesis.cancel();
 
-        if (!webcamPermission){
-            stopSpeechToText();
-            setSaving(false);
-            return toast("Error", {
-                description: "Please enable webcam access to and record again.",
-            })
-        }
-
-        if(isRecording){
-            stopSpeechToText();
-            setSaving(true);
-
-            await new Promise(resolve => setTimeout(resolve, 3000));
-            if(userAnswer.trim() === ""){
-                setSaving(false);
-                return toast.error("No answer recorded",{
-                    description: "Please record your answer before saving.",
-                });
+        if(listening){
+            SpeechRecognition.stopListening();
+            if(transcript.length < 5){
+                return toast.error("Answer too short, please provide a longer response.");
             }
+            setSaving(true);
             try{
                 const token = await user.getIdToken();
                 await axios.post(`${backendUrl}/chat/feedback`, {
@@ -70,11 +63,10 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
                     ques_no:activeQuestion,
                     ques:question.question,
                     ans:question.answer,
-                    user_ans:userAnswer,
+                    user_ans:transcript,
                     email:user.email,
-                },
-                {
-                    headers: {
+                },{
+                    headers:{
                         Authorization: `Bearer ${await token}`
                     }
                 });
@@ -89,10 +81,9 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
             }
             setSaving(false);
         }
-        else {
-            setResults([]);
-            setUserAnswer("");
-            startSpeechToText();
+        else{
+            resetTranscript();
+            startListening();
         }
     }
 
@@ -104,11 +95,19 @@ export default function RecordAnswer({question,activeQuestion,mock_id,userAnswer
                 }
             </div>
 
-            <Button onClick={handleRecord}>
-                {saving?<p className="flex gap-1 items-center"><LoaderCircle className="animate-spin"/>Saving</p>:isRecording ? <h2 className="flex items-center gap-1 text-red-500"><Mic/>Stop Recording</h2>:"Record Answer"}
+            <Button onClick={handleRecord} disabled={saving||!micPermission||!webcamPermission}>
+                {saving?<p className="flex gap-1 items-center"><LoaderCircle className="animate-spin"/>Saving</p>:listening ? <h2 className="flex items-center gap-1 text-red-500"><Mic/>Stop Recording</h2>:"Record Answer"}
             </Button>
-
-            {error && <p className="text-red-500">Error: {error}</p>}
+            
+            {
+                transcript.length > 0 &&
+                <div className="w-full h-32 overflow-y-auto bg-gray-100 p-4 rounded-md">
+                    <h3 className="font-semibold">Recorded Answer:</h3>
+                    <p className="text-sm">{transcript}</p>
+                </div>
+            }
+            
+            {/* {error && <p className="text-red-500">Error: {error}</p>} */}
         </div>
     )
 }

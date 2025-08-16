@@ -15,7 +15,11 @@ export default function Interview() {
     const [mockId, setMockId] = useState(mock_id);
     const [userAnswer, setUserAnswer] = useState("");
     const {user} = useAuth();
-    const [key, setKey] = useState(0);
+    
+    const setData = (data) => {
+        setQuestions(data.mock_json);
+        setMockId(data.mock_id);
+    }
 
     useEffect(()=>{
         const state = location.state?.interviewData;
@@ -26,11 +30,6 @@ export default function Interview() {
             user && getInterviewDetails();
         }
     },[user]);
-    
-    useEffect(()=>{
-        setKey(prev=> prev + 1);
-        setUserAnswer("");
-    },[activeQuestion]);
 
     const getInterviewDetails = async () => {
         try{
@@ -47,18 +46,14 @@ export default function Interview() {
             console.error("Error fetching interview:", error);
         }
     }
-    const setData = (data) => {
-        setQuestions(data.mock_json);
-        setMockId(data.mock_id);
-    }
 
     return questions && (
         <div className='grid grid-cols-1 md:grid-cols-2 gap-20 md:mt-20'>
             
-            <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} setUserAnswer={setUserAnswer}  /></div>
+            <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} setUserAnswer={setUserAnswer}/></div>
 
             <div className='order-1 md:order-2'>
-                <RecordAnswer key={key} question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} userAnswer={userAnswer} setUserAnswer={setUserAnswer}/>
+                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} userAnswer={userAnswer} setUserAnswer={setUserAnswer}/>
             </div>
 
         </div>
