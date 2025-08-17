@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Lightbulb, LoaderCircle } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Webcam from "react-webcam";
@@ -10,6 +10,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useAuth } from "@/context/AuthContext";
+import Loading from "@/components/Loading";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function InterviewDashboard() {
@@ -49,14 +50,7 @@ export default function InterviewDashboard() {
 
     if(loading){
         return (
-            <div className="flex items-center justify-center h-[80vh]">
-                <div className="space-y-4">
-                    <h1 className="text-xl font-bold flex gap-2 items-center">
-                        <LoaderCircle className="animate-spin"/>
-                        Fetching Details. Please wait.
-                    </h1>
-                </div>
-            </div>
+            <Loading/>
         );
     }
 

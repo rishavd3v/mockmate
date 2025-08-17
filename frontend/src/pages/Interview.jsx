@@ -1,3 +1,4 @@
+import Loading from '@/components/Loading';
 import QuestionCard from '@/components/QuestionCard';
 import RecordAnswer from '@/components/RecordAnswer';
 import { useAuth } from '@/context/AuthContext';
@@ -11,9 +12,10 @@ export default function Interview() {
     const location = useLocation();
     const { mock_id } = useParams();
     const [activeQuestion, setActiveQuestion] = useState(0);
+    const [loading, setLoading] = useState(!location.state?.interviewData);
     const [questions,setQuestions] = useState(location.state?.interviewData?.mock_json);
+    const [answeredQuestions, setAnsweredQuestions] = useState({});
     const [mockId, setMockId] = useState(mock_id);
-    const [userAnswer, setUserAnswer] = useState("");
     const {user} = useAuth();
     
     const setData = (data) => {
@@ -25,6 +27,7 @@ export default function Interview() {
         const state = location.state?.interviewData;
         if(state) {
             setData(state);
+            setLoading(false);
         }
         else{
             user && getInterviewDetails();
@@ -33,6 +36,7 @@ export default function Interview() {
 
     const getInterviewDetails = async () => {
         try{
+            setLoading(true);
             const token = await user.getIdToken();
             const response = await axios.get(`${backendUrl}/mock/${mockId}`,{
                 headers:{
@@ -45,15 +49,22 @@ export default function Interview() {
             toast("Error fetching interview details. Please try again later.");
             console.error("Error fetching interview:", error);
         }
+        setLoading(false);
     }
 
-    return questions && (
+    if(loading){
+        return (
+            <Loading/>
+        );
+    }
+
+    return !loading && questions && (
         <div className='grid grid-cols-1 md:grid-cols-2 gap-20 md:mt-20'>
             
-            <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} setUserAnswer={setUserAnswer}/></div>
+            <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} answeredQuestions={answeredQuestions}/></div>
 
             <div className='order-1 md:order-2'>
-                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} userAnswer={userAnswer} setUserAnswer={setUserAnswer}/>
+                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} onAnswered={(index)=>{setAnsweredQuestions(prev=>({...prev, [index]:true}))}}/>
             </div>
 
         </div>
