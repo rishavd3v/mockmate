@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Webcam from "react-webcam";
@@ -14,19 +14,20 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function InterviewDashboard() {
     const mock_id = useParams().mock_id;
-    const [loading, setLoading] = useState(false);
     const [interviewData, setInterviewData] = useState(null);
     const [webcamEnabled, setWebcamEnabled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const {user} = useAuth();
     const state = location.state;
-
+    const [loading, setLoading] = useState(!state?.interviewData);
+    
     useEffect(()=>{
         if(state?.interviewData){
             setInterviewData(state.interviewData);
+            setLoading(false);
         }
-        else getInterviewDetails();
+        else user && getInterviewDetails();
     },[mock_id,user]);
     
     const getInterviewDetails = async () => {
@@ -46,11 +47,24 @@ export default function InterviewDashboard() {
         setLoading(false);
     }
 
+    if(loading){
+        return (
+            <div className="flex items-center justify-center h-[80vh]">
+                <div className="space-y-4">
+                    <h1 className="text-xl font-bold flex gap-2 items-center">
+                        <LoaderCircle className="animate-spin"/>
+                        Fetching Details. Please wait.
+                    </h1>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <main>
-            <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
             {!loading  && interviewData && <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
                 <div className="order-2 sm:order-1">
+                    <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
                     <div>
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
