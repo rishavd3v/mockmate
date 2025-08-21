@@ -50,14 +50,13 @@ export default function InterviewDashboard() {
     
     const getMediaAccess = async () => {
         navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(()=>{setMicPermission(true)})
+        .then(()=>{setWebcamEnabled(true)})
         .catch(() => {
-            setMicPermission(false)
+            setWebcamEnabled(false);
             toast.error("Microphone permission required", {
                 description: "Please allow microphone access to record your answer.",
             });
         });
-        setWebcamEnabled(true);
     }
 
     if(loading){
