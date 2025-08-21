@@ -59,12 +59,12 @@ export default function Interview() {
     }
 
     return !loading && questions && (
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-20 md:mt-20'>
+        <div className='grid md:grid-cols-10 h-screen'>
             
-            <div className='order-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} answeredQuestions={answeredQuestions}/></div>
+            <div className='order-2 col-span-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} answeredQuestions={answeredQuestions}/></div>
 
-            <div className='order-1 md:order-2'>
-                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} onAnswered={(index)=>{setAnsweredQuestions(prev=>({...prev, [index]:true}))}}/>
+            <div className='order-1 md:order-2 col-span-8'>
+                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} setActiveQuestion={setActiveQuestion} onAnswered={(index)=>{setAnsweredQuestions(prev=>({...prev, [index]:true}))}}/>
             </div>
 
         </div>

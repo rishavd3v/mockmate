@@ -47,6 +47,18 @@ export default function InterviewDashboard() {
         }
         setLoading(false);
     }
+    
+    const getMediaAccess = async () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(()=>{setMicPermission(true)})
+        .catch(() => {
+            setMicPermission(false)
+            toast.error("Microphone permission required", {
+                description: "Please allow microphone access to record your answer.",
+            });
+        });
+        setWebcamEnabled(true);
+    }
 
     if(loading){
         return (
@@ -58,7 +70,7 @@ export default function InterviewDashboard() {
         <main>
             {!loading  && interviewData && <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-4 justify-between items-center mt-10">
                 <div className="order-2 sm:order-1">
-                    <h1 className="text-xl font-bold mb-4">Let's Begin!</h1>
+                    <h1 className="text-2xl font-bold mb-4">Ready to Start Interview?</h1>
                     <div>
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
@@ -79,8 +91,8 @@ export default function InterviewDashboard() {
                             <Webcam style={{height:240}} onUserMedia={()=>setWebcamEnabled(true)} onUserMediaError={()=>setWebcamEnabled(false)} mirrored={true}/>
                         </div>:
                         <div className="flex flex-col items-center justify-center gap-4">
-                            <div className="bg-black p-10 px-18"><img className='w-40 h-40' src='/src/assets/webcam.png' alt="" /></div>
-                            <Button onClick={()=>setWebcamEnabled(true)} variant={"outline"} size={"sm"}>Enable web cam and mic</Button>
+                            <div className="bg-black p-10 px-18"><img className='w-40 h-40' src='/webcam.png' alt="" /></div>
+                            <Button onClick={getMediaAccess} variant={"outline"} size={"sm"}>Enable web cam and mic</Button>
                         </div>
                     }
                 </div>
@@ -103,17 +115,18 @@ function Note(){
 function JobDescription({interviewData}){
     const { job_pos, job_desc, job_exp } = interviewData;
     return(
-        <div>
-            <p className="font-medium">Job Description</p>
-            <div className="my-2 text-sm">
-            <div className="font-medium">
-                Job Role: <span className="font-normal">{job_pos}</span>
-            </div>
-            {job_desc && <div className="font-medium">
-                Job description/technologies: <span className="font-normal">{job_desc}</span>
-            </div>}
-            <div className="font-medium">
-                Years of experience: <span className="font-normal">{job_exp}</span></div>
+        <div className="mb-4">
+            <p className="font-semibold text-xl">Job Description</p>
+            <div className="text-sm">
+                <div className="font-medium">
+                    Job Role: <span className="font-normal">{job_pos}</span>
+                </div>
+                {job_desc && <div className="font-medium">
+                    Job description/technologies: <span className="font-normal">{job_desc}</span></div>
+                }
+                <div className="font-medium">
+                    Years of experience: <span className="font-normal">{job_exp}</span>
+                </div>
             </div>
         </div>
     )
