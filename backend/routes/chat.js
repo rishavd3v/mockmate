@@ -47,16 +47,18 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
 
 router.post('/feedback', async (req, res) => {
     const {mock_id,ques_no,ques,ans,user_ans} = req.body;
-    const prompt = `You are an interviewer. Please provide feedback on the following answer: ${user_ans}. The question asked was: ${ques}. Provide a rating from 0 to 10 and a brief feedback on area of improvement. Give response in json format with the following keys: "rating" and "feedback".`;
+    const prompt = `You are an interviewer. Evaluate the candidate's answer critically. Question: "${ques}". Answer: "${user_ans}". Use strict grading: 0 = no answer or irrelevant, 1–3 = very poor/vague, 4–6 = average with gaps, 7–8 = good but needs improvement, 9–10 = excellent. Return only valid JSON in the format: {"rating": <0-10 integer>, "feedback": "<concise feedback on weaknesses and improvements>"} without extra text.`;
+
 
     const response = await model(prompt);
     const modelRes = response.text;
     const data = modelRes.replace(/```json/g, '').replace(/```/g, '').trim();
+
     const jsonRes = JSON.parse(data);
     const feedback = jsonRes.feedback;
     const rating = jsonRes.rating;
 
-    const result = await saveFeedback({mock_id, ques_no, ques, ans, user_ans, feedback, rating}); 
+    const result = await saveFeedback({mock_id, ques_no, ques, ans, user_ans, feedback, rating});
     
     if(result.rowCount > 0){
         res.send({ message: "Feedback submitted successfully" });
