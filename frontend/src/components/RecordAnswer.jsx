@@ -17,31 +17,61 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
     } = useSpeechRecognition({continuous: true});
 
     const {user} = useAuth();
-    const [micPermission, setMicPermission] = useState(true);
-    const [webcamPermission, setWebcamPermission] = useState(true);
+    const [micPermission, setMicPermission] = useState(false);
+    const [webcamPermission, setWebcamPermission] = useState(false);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         getMediaAccess();
     }, []);
-    
-    const getMediaAccess = async () => {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(()=>{setMicPermission(true)})
-        .catch(() => {
-            setMicPermission(false)
-            toast.error("Microphone permission required", {
-                description: "Please allow microphone access to record your answer.",
-            });
-        });
-    }
 
-    const startListening=()=>{
-        SpeechRecognition.startListening({
-          continuous: true,
-          interimResults: true,
-          language: "en-US"
-        });
+    const getMediaAccess = async () => {
+        try {
+            await navigator.mediaDevices.getUserMedia({ 
+                video: true, 
+                audio: true
+            });
+            console.log("✅ Permissions granted");
+            setMicPermission(true);
+            setWebcamPermission(true);
+        } catch (err) {
+            setMicPermission(false);
+            setWebcamPermission(false);
+            
+            if (err.name === 'NotAllowedError') {
+                toast.error("Please allow camera and microphone access");
+            } else if (err.name === 'NotFoundError') {
+                toast.error("No camera or microphone found");
+            }
+        }
+    };
+
+    const startListening = () => {
+        try {
+            if (!browserSupportsSpeechRecognition) {
+                throw new Error("Speech recognition not supported");
+            }
+            if (!micPermission) {
+                throw new Error("Microphone permission required");
+            }
+
+            SpeechRecognition.startListening({
+                continuous: true,
+                interimResults: true,
+                language: "en-US",
+            });            
+        } catch (error) {
+            console.error("Error starting speech recognition:", error);
+            toast.error(`Failed to start recording: ${error.message}`);
+        }
+    };
+
+    const stopListening = () => {
+        try {
+            SpeechRecognition.stopListening();
+        } catch (error) {
+            console.error("Error stopping speech recognition:", error);
+        }
     };
 
     const handleNextQuestion = () => {
@@ -52,42 +82,45 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
 
     const handleRecord = async () => {
         speechSynthesis.cancel();
-
+        
         if(listening){
-            SpeechRecognition.stopListening();
+            stopListening();
+            
             if(transcript.length < 5){
                 return toast.error("Answer too short, please provide a longer response.");
             }
+            
             setSaving(true);
             try{
                 const token = await user.getIdToken();
-                await axios.post(`${backendUrl}/chat/feedback`, {
-                    mock_id:mock_id,
-                    ques_no:activeQuestion,
-                    ques:question.question,
-                    ans:question.answer,
-                    user_ans:transcript,
-                    email:user.email,
-                },{
-                    headers:{
-                        Authorization: `Bearer ${await token}`
-                    }
-                });
+                // await axios.post(`${backendUrl}/chat/feedback`, {
+                //     mock_id:mock_id,
+                //     ques_no:activeQuestion,
+                //     ques:question.question,
+                //     ans:question.answer,
+                //     user_ans:transcript,
+                //     email:user.email,
+                // },{
+                //     headers:{
+                //         Authorization: `Bearer ${token}`
+                //     }
+                // });
                 toast.success("Response saved successfully!", {
                     description: "Your answer has been recorded",
                 });
+                resetTranscript();
                 handleNextQuestion();
                 
-            }
-            catch(err){
+            } catch(err) {
+                console.error("Error saving response:", err);
                 toast.error("Error saving response", {
                     description: "An error occurred while saving your response. Please try again.",
                 });
             }
             setSaving(false);
             onAnswered(activeQuestion);
-        }
-        else{
+        } else {
+            console.log("Starting recording...");
             resetTranscript();
             startListening();
         }
@@ -95,51 +128,65 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
 
     return(
         <div className='flex flex-col justify-center items-center gap-10 h-screen'>
-
             <div className="text-xl font-semibold text-center w-3xl">
                 {question?.question}
             </div>
 
             <div className='flex flex-col justify-around items-center bg-black text-white rounded-xl w-xl'>
                 <div className="px-2 pt-2">
-                    {webcamPermission&&micPermission?
-                        (<Webcam className="rounded-lg w-2xl" onUserMediaError={()=>{setWebcamPermission(false)}} onUserMedia={()=>{setWebcamPermission(true)}} mirrored={true}/>) : <div className="sm:mt-10">
-                            {(!micPermission && !webcamPermission) ? 
-                                <div className="flex gap-4"><VideoOff/><MicOff/></div> : !micPermission ? <MicOff/> : <VideoOff/>
-                            }
-                        </div>                        
-                    }
+                    {webcamPermission && micPermission ? (
+                        <Webcam 
+                            className="rounded-lg w-2xl" 
+                            onUserMediaError={() => {setWebcamPermission(false)}} 
+                            onUserMedia={() => {setWebcamPermission(true)}} 
+                            mirrored={true}
+                        />
+                    ) : (
+                        <div className="sm:mt-10 p-8 text-center">
+                            <div className="flex gap-4 justify-center mb-4">
+                                {!webcamPermission && <VideoOff size={32} />}
+                                {!micPermission && <MicOff size={32} />}
+                            </div>
+                            <p className="text-sm mb-4">Camera and microphone access required</p>
+                            <Button
+                                onClick={getMediaAccess}
+                                variant="outline"
+                                size="sm"
+                            >
+                                Grant Permissions
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
-                <div className="p-4 flex justify-center w-full">
-                    <Button className="rounded-xl flex items-center justify-center bg-red-500 hover:bg-red-600" 
-                        onClick={()=>{
-                            if(!micPermission || !webcamPermission){
+                <div className="p-4 flex flex-col items-center w-full">
+
+                    <Button 
+                        className="rounded-xl flex items-center justify-center bg-red-500 hover:bg-red-600" 
+                        onClick={() => {
+                            if(!micPermission || !webcamPermission) {
                                 toast.error("Please enable microphone and camera permissions to record your answer.");
+                                getMediaAccess();
+                            } else {
+                                handleRecord();
                             }
-                            else handleRecord()
                         }} 
-                        disabled={saving}
+                        disabled={saving || !browserSupportsSpeechRecognition || !micPermission}
                     >
-                        <div className={`flex items-center gap-1 ${listening&&"animate-pulse"}`}>
-                            <Mic/> {listening?"Recording":"Start Recording"}
+                        <div className={`flex items-center gap-1 ${(listening) && "animate-pulse"}`}>
+                            <Mic/> 
+                            {saving ? "Saving..." : (listening) ? "Stop Recording" : "Start Recording"}
                         </div>
                     </Button>
                 </div>
             </div>
-
-            {!browserSupportsSpeechRecognition && <p className="text-red-500">Error: Your browser does not support speech recognition!</p>}
-
             
-            
-            {
-                transcript.length > 0 &&
+            {transcript.length > 0 && (
                 <div className="w-full overflow-y-auto min-h-32 bg-gray-100 p-4 rounded-md">
                     <h3 className="font-semibold">Recorded Answer:</h3>
                     <p className="text-sm">{transcript}</p>
                 </div>
-            }
-
+            )}
         </div>
     )
 }
