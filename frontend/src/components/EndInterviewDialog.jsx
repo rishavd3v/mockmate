@@ -21,8 +21,7 @@ export default function EndInterviewDialog({ onSubmit }) {
                 <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
+                    Are you sure you want to end the interview? You will be redirected to the feedback page.
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
