@@ -5,6 +5,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton"
 import AccordionContainer from "@/components/AccordionContainer";
+import { Button } from "@/components/ui/button";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Feedback(){
@@ -45,9 +46,10 @@ export default function Feedback(){
 
     if(!loading && (!feedback || feedback.length === 0)){
         return (
-            <div className="space-y-4">
+            <div>
                 <h1 className="text-2xl font-semibold">Feedback</h1>
-                <p className="text-sm text-gray-600">No feedback available for this mock interview.</p>
+                <p className="text-sm text-gray-600">No feedback available for this mock interview. Please attempt the interview first.</p>
+                <Button className="mt-4" onClick={()=>{window.location.href=`/interview/${mock_id}`}}>Start Interview</Button>
             </div>
         );
     }
@@ -56,7 +58,9 @@ export default function Feedback(){
         <div className="space-y-4">
             <div>
                 <h1 className="text-2xl font-semibold">Feedback</h1>
-                {<p className="text-sm text-gray-600">Here's your feedback for {mock?.job_pos} mock interview</p>}
+                <p className="text-sm text-gray-600">
+                    {!loading ? `Here's your feedback for ${mock?.job_pos} mock interview`:"Fetching  feedback. Please wait."}
+                </p>
             </div>
             {loading?
                 <SkeletonCard/> : (<div>
