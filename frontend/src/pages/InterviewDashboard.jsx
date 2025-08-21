@@ -62,7 +62,7 @@ export default function InterviewDashboard() {
 
     if(loading){
         return (
-            <Loading/>
+            <Loading className={"h-[80vh]"}/>
         );
     }
 

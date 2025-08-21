@@ -54,7 +54,7 @@ export default function Interview() {
 
     if(loading){
         return (
-            <Loading/>
+            <Loading className={"h-screen"}/>
         );
     }
 
