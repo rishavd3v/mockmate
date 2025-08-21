@@ -1,6 +1,5 @@
 import {Outlet} from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { Toaster } from 'sonner';
 
 const MainLayout = () => (
   <>
@@ -8,7 +7,6 @@ const MainLayout = () => (
     <main className='px-10 lg:px-30 py-10'>
       <Outlet />
     </main>
-    <Toaster/>
   </>
 );
 
