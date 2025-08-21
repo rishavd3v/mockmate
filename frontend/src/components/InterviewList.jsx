@@ -65,9 +65,9 @@ function SkeletonCard() {
     return(
         <div className="mt-4">
             <div className="hidden sm:flex flex-col sm:flex-row gap-4">
-                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
-                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
-                <div><Skeleton className="h-[165px] w-[372px] rounded-md" /></div>
+                <div><Skeleton className="h-[170px] w-[418px] rounded-md" /></div>
+                <div><Skeleton className="h-[170px] w-[418px] rounded-md" /></div>
+                <div><Skeleton className="h-[170px] w-[418px] rounded-md" /></div>
             </div>
 
             <div className="sm:hidden">

@@ -52,7 +52,7 @@ export default function InterviewCard({interview,setInterviewList}){
             </div>
             <p className="text-sm">Experience: {interview?.job_exp} years</p>
             <p className="text-sm">Type: {interview.mock_type}</p>
-            <p className="text-xs text-gray-500">Created At: {formatDate(interview?.created_at)}</p>
+            <p className="text-sm text-gray-500">Created At: {formatDate(interview?.created_at)}</p>
             <div className="flex gap-2 mt-4">
                 <Button size={"sm"} variant={"outline"} onClick={()=>navigate(`/feedback/${interview?.mock_id}`)}>Feedback</Button>
                 <Button size={"sm"} onClick={()=>navigate(`/interview/${interview?.mock_id}`,{state:{interviewData:interview}})}>Start Interview</Button>
