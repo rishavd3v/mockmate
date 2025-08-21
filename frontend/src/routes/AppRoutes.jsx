@@ -10,6 +10,7 @@ import Upgrade from '@/pages/Upgrade';
 import Profile from '@/pages/Profile';
 import Landing from '@/pages/Landing';
 import PublicRoute from '@/components/Auth/PublicRoute';
+// import LoginPage from '@/pages/LoginPage';
 
 export default function AppRoutes(){
   return(
@@ -19,11 +20,12 @@ export default function AppRoutes(){
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>} />
         <Route path="/feedback/:mock_id" element={<ProtectedRoute><Feedback/></ProtectedRoute>} />
         <Route path="/interview/:mock_id" element={<ProtectedRoute><InterviewDashboard/></ProtectedRoute>} />
-        <Route path="/interview/:mock_id/start" element={<ProtectedRoute><Interview/></ProtectedRoute>} />
         <Route path="/upgrade" element={<ProtectedRoute><Upgrade/></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
       </Route>
+      <Route path="/interview/:mock_id/start" element={<ProtectedRoute><Interview/></ProtectedRoute>} />
       <Route path="/signin" element={<PublicRoute><Login/></PublicRoute>} />
+      {/* <Route path="/login" element={<PublicRoute><LoginPage/></PublicRoute>} /> */}
       <Route path="*" element={<NotFound/>}/>
     </Routes>
   )
