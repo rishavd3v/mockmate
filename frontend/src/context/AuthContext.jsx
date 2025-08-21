@@ -51,7 +51,7 @@ export const AuthProvider = ({children}) =>{
         }
     };
     
-    const siginWithGithub = ()=>{
+    const signinWithGithub = ()=>{
         try{
             signInWithPopup(auth,githubProvider);
         }catch(err){
@@ -71,7 +71,7 @@ export const AuthProvider = ({children}) =>{
             user,
             loading,
             signinWithGoogle,
-            siginWithGithub,
+            signinWithGithub,
             signoutUser,
             deleteAccount,
             }}>
