@@ -1,9 +1,11 @@
-import { Lightbulb, Volume2 } from "lucide-react";
+import { Check, Lightbulb, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
+import { Separator } from "./ui/separator";
+import EndInterviewDialog from "./EndInterviewDialog";
 
-export default function QuestionCard({ question,activeQuestion, setActiveQuestion, setUserAnswer}){
+export default function QuestionCard({ question,activeQuestion, setActiveQuestion,answeredQuestions}){
     const [speaking, setSpeaking] = useState(false);
     const navigate = useNavigate();
     const { mock_id } = useParams();
@@ -11,7 +13,7 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
     const textToSpeech = () => {
         if(speaking){
             speechSynthesis.cancel();
-            setSpeaking(false);
+            setSpeaking(false); 
             return;
         }
         setSpeaking(true);
@@ -23,7 +25,6 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
     };
 
     useEffect(() => {
-        setUserAnswer("");
         if(speaking){
             speechSynthesis.cancel();
             setSpeaking(false);
@@ -31,42 +32,39 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
     },[activeQuestion]);
 
     return (
-        <div>
-            <div className="p-4 rounded-md border shadow-md text-sm lg:min-h-96">
-                <div className="flex items-center gap-3 flex-wrap">
-                    {question.map((item,index) => (
-                    <div
-                        key={index}
-                        onClick={() => setActiveQuestion(index)}
-                        disabled={activeQuestion === index}
-                        className={`flex items-center justify-center gap-2 rounded-full border px-4 py-1 cursor-pointer  ${
-                        activeQuestion === index && "bg-blue-400"} ${activeQuestion!=index && "hover:bg-gray-100"}`}
-                    >
-                        Question {index + 1}
+        <div className="h-screen bg-black p-4 text-white">
+            <div className="text-center shadow-md flex flex-col gap-4">
+                <div className="py-4">
+                    <p className="font-semibold text-lg">Question {activeQuestion+1}/5</p>
+                    <div>
+                        {question.map((q, index) => (
+                            <span key={index} className={`inline-block w-2 h-2 rounded-full ${activeQuestion === index ? 'bg-blue-500' : 'bg-gray-400'} mx-1`}></span>
+                        ))}
                     </div>
+                </div>
+                <Separator/>
+
+                <div className="mt-2">
+                    {question.map((q,index)=>(
+                        <div key={index} className={`p-2 ${activeQuestion === index ? 'bg-blue-500' : 'bg-gray-600'} rounded-md mb-4`}>
+                            <p className="flex gap-4 items-center justify-center">
+                                Question {index+1}
+                                {answeredQuestions[index] && <Check className="rounded-full bg-green-500 p-1" size={20}/>}
+                            </p>
+                        </div>
                     ))}
-                    <div className="my-6 space-y-2">
-                        <p className="font-medium text-base">{question[activeQuestion]?.question}</p>
-                        <Volume2 className="cursor-pointer" size={18} onClick={textToSpeech}/>
-                    </div>
                 </div>
 
-                <div className="p-4 bg-blue-200 text-blue-800 mt-10 rounded-md space-y-2 text-sm">
-                    <p className="flex gap-1"><Lightbulb size={18}/>Note:</p>
-                    <p>Click on 'Record Answer' when you are ready to answer the question. <strong>Make sure to speak loud and clear.</strong> At the end we will provide the feedback for all the attempted questions.</p>
-                </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-4">
-                {activeQuestion>0 && <Button className="min-w-26" onClick={() => setActiveQuestion((prev) => (prev - 1))}>
+            <div className="flex justify-center gap-4 mt-4 text-black">
+                <Button disabled={activeQuestion<1} variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev - 1))}>
                     Previous
-                </Button>}
-                {activeQuestion<question.length-1 && <Button className="min-w-26" onClick={() => setActiveQuestion((prev) => (prev + 1))}>
+                </Button>
+                {activeQuestion<question.length-1 && <Button variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev + 1))}>
                     Next
                 </Button>}
-                {activeQuestion==question.length-1 && <Button className="min-w-26" variant={"destructive"} onClick={() => navigate(`/feedback/${mock_id}`)}>
-                    End Interview
-                </Button>}
+                {activeQuestion==question.length-1 && <EndInterviewDialog onSubmit={()=>navigate(`/feedback/${mock_id}`)}/>}
             </div>
         </div>
     );
