@@ -1,4 +1,4 @@
-import { Check, Lightbulb, Volume2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,19 +10,19 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
     const navigate = useNavigate();
     const { mock_id } = useParams();
 
-    const textToSpeech = () => {
-        if(speaking){
-            speechSynthesis.cancel();
-            setSpeaking(false); 
-            return;
-        }
-        setSpeaking(true);
-        const utterance = new SpeechSynthesisUtterance(question[activeQuestion].question);
-        utterance.onend = () => {
-            setSpeaking(false);
-        };
-        speechSynthesis.speak(utterance);
-    };
+    // const textToSpeech = () => {
+    //     if(speaking){
+    //         speechSynthesis.cancel();
+    //         setSpeaking(false); 
+    //         return;
+    //     }
+    //     setSpeaking(true);
+    //     const utterance = new SpeechSynthesisUtterance(question[activeQuestion].question);
+    //     utterance.onend = () => {
+    //         setSpeaking(false);
+    //     };
+    //     speechSynthesis.speak(utterance);
+    // };
 
     useEffect(() => {
         if(speaking){
@@ -32,7 +32,7 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
     },[activeQuestion]);
 
     return (
-        <div className="h-screen bg-black p-4 text-white">
+        <div className="min-h-screen bg-black p-4 text-white flex flex-col justify-between">
             <div className="text-center shadow-md flex flex-col gap-4">
                 <div className="py-4">
                     <p className="font-semibold text-lg">Question {activeQuestion+1}/5</p>
@@ -55,16 +55,16 @@ export default function QuestionCard({ question,activeQuestion, setActiveQuestio
                     ))}
                 </div>
 
-            </div>
 
-            <div className="flex justify-center gap-4 mt-4 text-black">
-                <Button disabled={activeQuestion<1} variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev - 1))}>
-                    Previous
-                </Button>
-                {activeQuestion<question.length-1 && <Button variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev + 1))}>
-                    Next
-                </Button>}
-                {activeQuestion==question.length-1 && <EndInterviewDialog onSubmit={()=>navigate(`/feedback/${mock_id}`)}/>}
+                <div className="flex justify-center gap-4 mt-4 text-black">
+                    <Button disabled={activeQuestion<1} variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev - 1))}>
+                        Previous
+                    </Button>
+                    {activeQuestion<question.length-1 && <Button variant={"outline"} className="w-26" onClick={() => setActiveQuestion((prev) => (prev + 1))}>
+                        Next
+                    </Button>}
+                    {activeQuestion==question.length-1 && <EndInterviewDialog onSubmit={()=>navigate(`/feedback/${mock_id}`)}/>}
+                </div>
             </div>
         </div>
     );
