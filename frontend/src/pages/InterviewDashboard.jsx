@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Webcam from "react-webcam";
@@ -9,8 +9,10 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/Loading";
+import { toast } from "sonner";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function InterviewDashboard() {
@@ -23,6 +25,8 @@ export default function InterviewDashboard() {
     const state = location.state;
     const [loading, setLoading] = useState(!state?.interviewData);
     
+    console.log("Interview Data:", interviewData);
+
     useEffect(()=>{
         if(state?.interviewData){
             setInterviewData(state.interviewData);
@@ -49,7 +53,7 @@ export default function InterviewDashboard() {
     }
     
     const getMediaAccess = async () => {
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        navigator.mediaDevices.getUserMedia({ audio: true, video:true })
         .then(()=>{setWebcamEnabled(true)})
         .catch(() => {
             setWebcamEnabled(false);
@@ -74,14 +78,22 @@ export default function InterviewDashboard() {
                         <JobDescription interviewData={interviewData}/>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button disabled={!webcamEnabled} onClick={()=>navigate('start',{state:{interviewData:interviewData}})} size={"sm"}>Start Interview</Button>
+                                <div className="w-min">
+                                    <StartInterviewButton
+                                        disabled={!webcamEnabled}
+                                        interviewData={interviewData}
+                                        onStartInterview={()=>{
+                                            navigate(`/interview/${mock_id}/start`,{state:{interviewData}});
+                                        }}
+                                    />
+                                </div>
                             </TooltipTrigger>
                             {!webcamEnabled && <TooltipContent>
                                 <p>Enable Camera & Mic first</p>
                             </TooltipContent>}
                         </Tooltip>
                     </div>
-                    <Note/>
+                    <Instruction/>
                 </div>
 
                 <div className="order-1 sm:order-2">
@@ -100,7 +112,7 @@ export default function InterviewDashboard() {
     );
 }
 
-function Note(){
+function Instruction(){
     return(
         <div className="mt-4 sm:mt-10 bg-gray-100 p-3 text-sm space-y-3 rounded-md">
             <p className="flex gap-1"><Lightbulb size={18}/>Important Information</p>
@@ -108,6 +120,66 @@ function Note(){
             <p>This interview will have 5 questions. Answer all the question for accurate analysis. At the end of the interview you will recieve your report.</p>
             <p>Note: We never store your video or audio.</p>
         </div>
+    )
+}
+
+function StartInterviewButton({interviewData,onStartInterview,disabled}) {
+    const [showDialog, setShowDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
+
+    const handleProceed = async () => {
+        setLoading(true);
+        try{
+            const token = await user.getIdToken();
+            const res = await axios.delete(`${backendUrl}/feedback/${interviewData.mock_id}`,{
+                headers:{
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setLoading(false);
+            onStartInterview();
+        }
+        catch(err){
+            console.error("Error starting interview.", err);
+            setLoading(false);
+            toast.error("Error starting interview. Please try again later.");
+        }
+    };
+
+    return (
+        <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+            <AlertDialogTrigger asChild>
+                <Button 
+                    disabled={disabled}
+                    onClick={()=>{
+                        if(interviewData.attempted){
+                            setShowDialog(true);
+                        }
+                        else onStartInterview();
+                    }}
+                >
+                    Start Interview
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Interview Already Attempted</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        You have already attempted this interview. Starting again will overwrite your previous responses and results. 
+                        Are you sure you want to proceed?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleProceed} disabled={loading}>
+                        <div className="flex gap-1" >
+                            {loading ? <p className="flex gap-1 items-center"><LoaderCircle className="animate-spin"/> Please wait</p>:"Yes, Start Again"}
+                        </div>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     )
 }
 
