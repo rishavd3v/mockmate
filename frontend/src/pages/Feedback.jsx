@@ -1,12 +1,11 @@
 import { useAuth } from "@/context/AuthContext";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton"
 import AccordionContainer from "@/components/AccordionContainer";
 import { Button } from "@/components/ui/button";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { getFeedback, getInterviewData } from "@/api/axios";
 
 export default function Feedback(){
     const [feedback, setFeedback] = useState();
@@ -17,25 +16,17 @@ export default function Feedback(){
     const totalRating = feedback?.length>0 && feedback?.reduce((sum, item) => sum + Number(item.rating), 0) || 0;
 
     useEffect(()=>{
-        user && getFeedback();
+        user && getFeedbackData();
     },[user,mock_id]);
     
-    const getFeedback = async () => {
+    const getFeedbackData = async () => {
         try{
             setLoading(true);
             const token = await user?.getIdToken();
-            const feedback = await axios.get(`${backendUrl}/feedback/${mock_id}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const mock = await axios.get(`${backendUrl}/mock/${mock_id}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setMock(mock.data);
-            setFeedback(feedback.data);
+            const feedbackData = await getFeedback(mock_id,token);
+            const interviewData = await getInterviewData(mock_id,token);
+            setMock(interviewData);
+            setFeedback(feedbackData);
         }
         catch(err){
             toast.dismiss();

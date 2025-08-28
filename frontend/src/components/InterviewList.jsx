@@ -1,39 +1,32 @@
 import { useAuth } from "@/context/AuthContext";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import InterviewCard from "./InterviewCard";
 import { Skeleton } from "@/components/ui/skeleton"
+import { getAllInterviews } from "@/api/axios";
 import { toast } from "sonner";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function InterviewList(){
     const [interviewList, setInterviewList] = useState([]);
     const [pageLoading, setPageLoading] = useState(false);
-
     const {user,loading} = useAuth();
 
     useEffect(() => {
         setPageLoading(true);
-        getAllMock();
+        getInterviews();
     },[loading]);
     
-    const getAllMock = async ()=>{
+    const getInterviews = async ()=>{
+        if(!user || loading) return;
         const token = await user?.getIdToken();
         try{
-            if(!user || loading) return;
-            const res = await axios.get(`${backendUrl}/mock/all`,{
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setInterviewList(res.data);
-            setPageLoading(false);
+            const data = await getAllInterviews(token);
+            setInterviewList(data);
         }
         catch(err){
-            toast.error("Error fetching interviews. Please try again later.");
-            console.error("Error fetching interviews:", err);
+            toast.error("Error fetching interviews");
         }
         setPageLoading(false);
+
     }
 
     if(pageLoading){

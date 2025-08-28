@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Delete, LoaderCircle, Trash } from "lucide-react";
+import { LoaderCircle, Trash } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import axios from "axios";
 import {
     AlertDialog,
     AlertDialogCancel,
@@ -14,7 +13,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useState } from "react";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { deleteInterview } from "@/api/axios";
 
 export default function InterviewCard({interview,setInterviewList}){
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -26,11 +25,7 @@ export default function InterviewCard({interview,setInterviewList}){
         setLoading(true);
         const token = await user?.getIdToken();
         try{
-            const res = await axios.delete(`${backendUrl}/mock/delete/${mockId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const res = await deleteInterview(mockId,token);
             if(res.status === 200){
                 setInterviewList((prev)=>prev.filter(item => item.mock_id !== mockId));
                 toast.success("Interview deleted successfully.");

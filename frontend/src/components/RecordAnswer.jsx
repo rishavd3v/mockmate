@@ -1,12 +1,11 @@
 import Webcam from "react-webcam";
 import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 import { Mic, MicOff, VideoOff } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { generateFeedback } from "@/api/axios";
 
 export default function RecordAnswer({question,activeQuestion,setActiveQuestion,mock_id,onAnswered}){
     const{
@@ -84,24 +83,13 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
             setSaving(true);
             try{
                 const token = await user.getIdToken();
-                await axios.post(`${backendUrl}/chat/feedback`, {
-                    mock_id:mock_id,
-                    ques_no:activeQuestion,
-                    ques:question.question,
-                    ans:question.answer,
-                    user_ans:transcript,
-                    email:user.email,
-                },{
-                    headers:{
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const data = await generateFeedback(mock_id,activeQuestion,question,transcript,user.email,token);
                 toast.success("Response saved successfully!", {
                     description: "Your answer has been recorded",
                 });
-                resetTranscript();
                 handleNextQuestion();
-                
+                onAnswered(activeQuestion);
+                resetTranscript();
             }
             catch(err) {
                 console.error("Error saving response:", err);
@@ -110,7 +98,6 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
                 });
             }
             setSaving(false);
-            onAnswered(activeQuestion);
         } 
         else{
             if(!browserSupportsSpeechRecognition){

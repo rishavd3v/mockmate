@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import { Lightbulb, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -13,7 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/Loading";
 import { toast } from "sonner";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { deleteFeedback, getInterviewData } from "@/api/axios";
 
 export default function InterviewDashboard() {
     const mock_id = useParams().mock_id;
@@ -25,8 +24,6 @@ export default function InterviewDashboard() {
     const state = location.state;
     const [loading, setLoading] = useState(!state?.interviewData);
     
-    console.log("Interview Data:", interviewData);
-
     useEffect(()=>{
         if(state?.interviewData){
             setInterviewData(state.interviewData);
@@ -36,20 +33,17 @@ export default function InterviewDashboard() {
     },[mock_id,user]);
     
     const getInterviewDetails = async () => {
+        setLoading(true);
         try{
-            setLoading(true);
             const token = await user.getIdToken();
-            const response = await axios.get(`${backendUrl}/mock/${mock_id}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setInterviewData(response.data);
+            const data =  await getInterviewData(mock_id,token);
+            setInterviewData(data);
+            setLoading(false);
         }
-        catch(error){
-            console.error("Error fetching interview:", error);
+        catch{
+            setLoading(false);
+            toast.error("Error fetching interview details. Please try again later.");
         }
-        setLoading(false);
     }
     
     const getMediaAccess = async () => {
@@ -132,11 +126,7 @@ function StartInterviewButton({interviewData,onStartInterview,disabled}) {
         setLoading(true);
         try{
             const token = await user.getIdToken();
-            const res = await axios.delete(`${backendUrl}/feedback/${interviewData.mock_id}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const res = await deleteFeedback(interviewData.mock_id, token);
             setLoading(false);
             onStartInterview();
         }

@@ -8,9 +8,9 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import axios from "axios";
 import { toast } from "sonner";
 import InputForm from "./InputForm";
+import { generateInterview } from "@/api/axios";
 
 export default function DialogBox({showDialog,setShowDialog,interviewType}){
     const [jobPos, setJobPos] = useState("");
@@ -32,11 +32,11 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         let headers = { Authorization: `Bearer ${token}` };
         switch (interviewType) {
             case "technical":
-                url = `${backendUrl}/chat/technical`;
+                url = `${backendUrl}/generate/technical`;
                 data = { jobPos, jobDesc, jobExp, type: interviewType };
                 break;
             case "resume":
-                url = `${backendUrl}/chat/resume/`;
+                url = `${backendUrl}/generate/resume/`;
                 data = new FormData();
                 data.append("resume", resume);
                 data.append("jobPos", jobPos);
@@ -45,18 +45,18 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
                 headers["Content-Type"] = "multipart/form-data";
                 break;
             case "behavioral":
-                url = `${backendUrl}/chat/behavioral`;
+                url = `${backendUrl}/generate/behavioral`;
                 data = { role: jobPos };
                 break;
             case "realtime":
-                url = `${backendUrl}/chat/realtime`;
+                url = `${backendUrl}/generate/realtime`;
                 data = { session_start: new Date().toISOString() };
                 break;
         }
         try{
-            const res = await axios.post(url, data, { headers });
-            const {mock_id,job_pos,job_desc,job_exp,mock_json} = res.data?.interviewData;
-            
+            const response = await generateInterview(url, data, headers);
+            const {mock_id,job_pos,job_desc,job_exp,mock_json} = response?.interviewData;
+
             if (mock_id){
                 setShowDialog(false);
                 navigate(`/interview/${mock_id}`,{state:{interviewData:{job_pos, job_desc, job_exp,mock_json}}});

@@ -1,12 +1,11 @@
+import { getInterviewData } from '@/api/axios';
 import Loading from '@/components/Loading';
 import QuestionCard from '@/components/QuestionCard';
 import RecordAnswer from '@/components/RecordAnswer';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Interview() {
     const location = useLocation();
@@ -35,19 +34,13 @@ export default function Interview() {
     },[user]);
 
     const getInterviewDetails = async () => {
+        setLoading(true);
         try{
-            setLoading(true);
-            const token = await user.getIdToken();
-            const response = await axios.get(`${backendUrl}/mock/${mockId}`,{
-                headers:{
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            setData(response.data);
+            const data = await getInterviewData(mockId);
+            setData(data);
         }
-        catch(error){
-            toast("Error fetching interview details. Please try again later.");
-            console.error("Error fetching interview:", error);
+        catch(err){
+            toast.error("Error fetching interview details. Please try again later.");
         }
         setLoading(false);
     }
@@ -59,7 +52,7 @@ export default function Interview() {
     }
 
     return !loading && questions && (
-        <div className='grid md:grid-cols-10 h-screen'>
+        <div className='grid md:grid-cols-10 min-h-screen'>
             
             <div className='order-2 col-span-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} answeredQuestions={answeredQuestions}/></div>
 
