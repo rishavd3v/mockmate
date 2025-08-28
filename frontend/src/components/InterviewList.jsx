@@ -32,7 +32,6 @@ export default function InterviewList(){
     if(pageLoading){
         return(
             <div>
-                <h2 className="text-lg font-medium">All past interviews</h2>
                 <SkeletonCard/>
             </div>
         )
@@ -40,7 +39,7 @@ export default function InterviewList(){
 
     return(
         <div>
-            <h2 className="text-lg font-medium">All past interviews</h2>
+            {/* <h2 className="text-lg font-medium">All past interviews</h2> */}
 
             {!pageLoading && Array.isArray(interviewList) && interviewList.length === 0 && (
                 <p className="text-gray-500 mt-4">No interviews found.</p>
