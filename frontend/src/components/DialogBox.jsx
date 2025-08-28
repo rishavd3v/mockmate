@@ -5,6 +5,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -12,7 +18,8 @@ import { toast } from "sonner";
 import InputForm from "./InputForm";
 import { generateInterview } from "@/api/axios";
 
-export default function DialogBox({showDialog,setShowDialog,interviewType}){
+export default function DialogBox({showDialog,setShowDialog}){
+    const [interviewType, setInterviewType] = useState("technical");
     const [jobPos, setJobPos] = useState("");
     const [jobDesc, setJobDesc] = useState("");
     const [jobExp, setJobExp] = useState("Fresher");
@@ -22,6 +29,10 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
     const [loading, setLoading] = useState(false);
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+    const handleTabChange = (type) => {
+        setInterviewType(type);
+    }
+    
     const onSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
@@ -78,6 +89,14 @@ export default function DialogBox({showDialog,setShowDialog,interviewType}){
         <DialogContent>
             <DialogHeader>
             <DialogTitle>Tell us about your interview</DialogTitle>
+            <Tabs defaultValue="technical">
+                <TabsList>
+                    <TabsTrigger onClick={()=>handleTabChange("technical")} value="technical">Technical</TabsTrigger>
+                    <TabsTrigger onClick={()=>handleTabChange("resume")} value="resume">Resume</TabsTrigger>
+                    <TabsTrigger disabled={true} onClick={()=>handleTabChange("behavioral")} value="behavioral">Behavioral</TabsTrigger>
+                    <TabsTrigger disabled={true} onClick={()=>handleTabChange("realtime")} value="realtime">Realtime</TabsTrigger>
+                </TabsList>
+            </Tabs>
             <DialogDescription>
                 {desc}
             </DialogDescription>
