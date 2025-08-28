@@ -47,12 +47,9 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
 
 router.post('/feedback', async (req, res) => {
     const {mock_id,ques_no,ques,ans,user_ans} = req.body;
-    console.log("ques:",ques);
-    console.log("user_ans:", user_ans);
 
     const prompt = `You are an interviewer. Evaluate the candidate's answer critically based on his response. Question: "${ques}". Candidate's response: "${user_ans}". Use strict grading: 0 = no answer or irrelevant, 1–3 = very poor/vague, 4–6 = average with gaps, 7–8 = good but needs improvement, 9–10 = excellent. Return only valid JSON in the format: {"rating": <0-10 integer>, "feedback": "<concise feedback on weaknesses and improvements>"} without extra text.`;
 
-    console.log("Feedback Prompt:", prompt);
     const response = await model(prompt);
     const modelRes = response.text;
     const data = modelRes.replace(/```json/g, '').replace(/```/g, '').trim();
