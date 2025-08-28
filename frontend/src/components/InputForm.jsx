@@ -69,7 +69,7 @@ export default function InputForm({onSubmit, jobExp, setJobExp, setJobPos, setJo
         </div>
       )}
       <div className="flex gap-4 mt-6">
-        <Button variant={"outline"} onClick={() => setShowDialog(false)}>
+        <Button type="button" variant={"outline"} onClick={() => setShowDialog(false)}>
           Cancel
         </Button>
         <Button type="submit" disabled={loading}>
