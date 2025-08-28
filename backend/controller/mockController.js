@@ -20,14 +20,32 @@ async function saveMockData(uid, mock_json, jobPos, jobDesc, jobExp, type) {
 
 async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feedback}){
     try{
-        const insertQuery = `
-            INSERT INTO feedback (mock_id, question_no, question, answer, user_ans, rating, feedback)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING id;
+        const checkQuery = `
+            SELECT id FROM feedback
+            WHERE mock_id = $1 AND question_no = $2
         `;
-        const result = await pool.query(insertQuery, [mock_id, ques_no, ques, ans, user_ans, rating, feedback]);
+        const existingRecord = await pool.query(checkQuery, [mock_id, ques_no]);
+        let result;
+        if (existingRecord.rows.length > 0){
+            const updateQuery = `
+                UPDATE feedback 
+                SET user_ans = $3, rating = $4, feedback = $5, created_at = CURRENT_TIMESTAMP
+                WHERE mock_id = $1 AND question_no = $2
+                RETURNING id;
+            `;
+            result = await pool.query(updateQuery, [mock_id, ques_no, user_ans, rating, feedback]);
+        }
+        else{
+            const insertQuery = `
+                INSERT INTO feedback (mock_id, question_no, question, answer, user_ans, rating, feedback)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING id;
+            `;
+            result = await pool.query(insertQuery, [mock_id, ques_no, ques, ans, user_ans, rating, feedback]);
+        }
         return result;
     }
+    
     catch(error){
         console.error('Error submitting feedback:', error);
         res.status(500).send("Error submitting feedback");
