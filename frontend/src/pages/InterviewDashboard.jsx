@@ -161,12 +161,12 @@ function StartInterviewButton({interviewData,onStartInterview,disabled}) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleProceed} disabled={loading}>
-                        <div className="flex gap-1" >
+                    <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+                    <Button onClick={handleProceed} disabled={loading}>
+                        <div className="flex gap-1">
                             {loading ? <p className="flex gap-1 items-center"><LoaderCircle className="animate-spin"/> Please wait</p>:"Yes, Start Again"}
                         </div>
-                    </AlertDialogAction>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
