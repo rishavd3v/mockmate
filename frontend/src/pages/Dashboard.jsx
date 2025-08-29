@@ -10,7 +10,7 @@ export default function Dashboard() {
     return(
         <main>
             <div>
-                <h1 className="text-2xl font-semibold">Welcome, {savedUser?.displayName.split(" ")[0]} </h1>
+                <h1 className="text-2xl font-semibold">Welcome, {savedUser?.displayName? savedUser?.displayName?.split(" ")[0]:"Silly Potato"} </h1>
                 {/* <p className="text-sm text-gray-600">Create new mock interview</p> */}
                 <div className="mt-2">
                     <Button onClick={()=>setShowDialog(true)}>+ New Interview</Button>
