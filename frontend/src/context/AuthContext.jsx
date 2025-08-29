@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth,GoogleAuthProvider, signInWithPopup, signOut, GithubAuthProvider, onAuthStateChanged,deleteUser} from "firebase/auth";
-import { toast } from "sonner";
+import { getAuth,GoogleAuthProvider, signInWithPopup, signOut, GithubAuthProvider, onAuthStateChanged,deleteUser, sendEmailVerification, signInWithEmailAndPassword, createUserWithEmailAndPassword} from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -19,6 +18,21 @@ const githubProvider = new GithubAuthProvider();
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
+
+const errorMessages = {
+    "auth/invalid-credential": "Invalid email or password.",
+    "auth/user-not-found": "No account found with this email.",
+    "auth/wrong-password": "Incorrect password.",
+    "auth/email-already-in-use": "This email is already registered.",
+    "auth/weak-password": "Password must be at least 6 characters.",
+    "auth/operation-not-allowed": "Email/password accounts are not enabled.",
+    "auth/popup-closed-by-user": "Sign-in popup was closed before completing.",
+    "auth/too-many-requests": "Too many attempts. Please try again later.",
+};
+
+const throwError = (err) => {
+    return errorMessages[err.code] || "Something went wrong. Please try again.";
+};
 
 export const AuthProvider = ({children}) =>{
     const [user, setUser] = useState(null);
@@ -47,17 +61,37 @@ export const AuthProvider = ({children}) =>{
         try{
             return await signInWithPopup(auth, googleProvider);
         }catch(err){
-            toast.error(err.message || "Google sign-in failed!");
+            throw throwError(err);
         }
     };
     
-    const signinWithGithub = ()=>{
+    const signinWithGithub = async ()=>{
         try{
-            signInWithPopup(auth,githubProvider);
+            return await signInWithPopup(auth,githubProvider);
         }catch(err){
-            toast.error(err.message || "GitHub sign-in failed!");
+            throw throwError(err);
         }
     }
+
+    const signinWithEmail = async (email,password)=>{
+        try{
+            return await signInWithEmailAndPassword(auth, email, password);
+        }catch(err){
+            throw throwError(err);
+        }
+    }
+
+    const signupWithEmail = async (email,password)=>{
+        try{
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await sendEmailVerification(userCredential.user);
+            return userCredential;
+        }catch(err){
+            throw throwError(err);
+        }
+    }
+
+
     
     const signoutUser = ()=>{
         signOut(auth);
@@ -72,6 +106,9 @@ export const AuthProvider = ({children}) =>{
             loading,
             signinWithGoogle,
             signinWithGithub,
+            signinWithEmail,
+            signupWithEmail,
+            sendEmailVerification,
             signoutUser,
             deleteAccount,
             }}>
