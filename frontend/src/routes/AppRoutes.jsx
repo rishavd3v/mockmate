@@ -1,6 +1,5 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import MainLayout from '../layout/MainLayout';
-import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import ProtectedRoute from '@/components/Auth/ProtectedRoute';
 import InterviewDashboard from '../pages/InterviewDashboard';
@@ -10,7 +9,7 @@ import Upgrade from '@/pages/Upgrade';
 import Profile from '@/pages/Profile';
 import Landing from '@/pages/Landing';
 import PublicRoute from '@/components/Auth/PublicRoute';
-// import LoginPage from '@/pages/LoginPage';
+import Login from '@/pages/Login';
 
 export default function AppRoutes(){
   return(
@@ -25,7 +24,6 @@ export default function AppRoutes(){
       </Route>
       <Route path="/interview/:mock_id/start" element={<ProtectedRoute><Interview/></ProtectedRoute>} />
       <Route path="/signin" element={<PublicRoute><Login/></PublicRoute>} />
-      {/* <Route path="/login" element={<PublicRoute><LoginPage/></PublicRoute>} /> */}
       <Route path="*" element={<NotFound/>}/>
     </Routes>
   )
