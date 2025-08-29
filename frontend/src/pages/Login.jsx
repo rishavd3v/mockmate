@@ -1,74 +1,37 @@
-import { Github, UserRound } from "lucide-react";
-import {useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { LoginForm } from "@/components/login-form"
 
-export default function Login(){
-    const {signinWithGoogle, signinWithGithub, user} = useAuth();
-    const navigate = useNavigate();
-    const handleGoogleSignIn = async () => {
-        try {
-            await signinWithGoogle();
-            navigate("/dashboard");
-        }catch (e) {
-            console.error("Google Sign-in failed:", e);
-        }
-    };
-    const handleGithubSignIn = async () => {
-        try {
-            await signinWithGithub();
-            navigate("/dashboard");
-        }catch (e) {
-            console.error("Google Sign-in failed:", e);
-        }
-    };
-    useEffect(() => {
-        if(user){
-            navigate("/dashboard");
-        }
-    },[])
-    return(
-        <div className="px-8 h-screen flex flex-col justify-center items-center">
-            <div className="flex flex-col justify-center gap-8 items-center px-4 sm:px-12 py-10 rounded-md border border-gray-200 max-h-3/4 overflow-auto scrollbar-hide shadow">
-                <div className="flex flex-col items-center space-y-2 text-center">
-                    <img className="h-10 object-center object-cover w-min" src="favicon.png" alt="" />
-                    <p className="text- font-bold">Sign In to Mockmate</p>
-                    <p className="text-xs text-gray-500">Welcome back, please sign-in to continue</p>
-                </div>
-                <div className="w-full space-y-4">
-                    <Button className={"bg-white text-gray-900"} onClick={handleGoogleSignIn}>
-                        <img className="w-5" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="" />
-                        <p className="text-sm">Sign In with Google</p>
-                    </Button>
-                    <Button className={"text-white bg-black hover:bg-gray-700"}>
-                        <Github size={18}/>
-                        <p className="text-sm">Sign In with GitHub</p>
-                    </Button>
-                    <Divider/>
-                    <Button disabled={true}  className={"hover:bg-gray-700"} onClick={handleGithubSignIn}>
-                        <UserRound size={18}/>
-                        <p className="text-sm">Sign In as Guest</p>
-                    </Button>
-                </div>
+export default function Login() {
+  return (
+    <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">
+        <div className="flex justify-center gap-2 md:justify-start">
+          <a href="/" className="flex items-center gap-2 font-medium">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <img src="/favicon.png" alt="" />
             </div>
+            MockMate
+          </a>
         </div>
-    )
-}
-
-function Button({disabled, children, className, onClick}) {
-    return (
-        <button className={`flex justify-center items-center gap-4 px-12 py-2 w-full font-medium rounded-lg transition-all duration-200 hover:bg-gray-100 border border-gray-200 cursor-pointer disabled:opacity-50 disabled:pointer-events-none ${className}`} onClick={onClick} disabled={disabled}>
-            {children}
-        </button>
-    );
-}
-
-function Divider(){
-    return(
-        <div className="flex justify-center items-center gap-2 my-6 w-full">
-            <div className="h-[0.5px] w-full bg-gray-300"></div>
-            <div className="text-xs pb-1">or</div>
-            <div className="h-[0.5px] w-full bg-gray-300"></div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-md">
+            <LoginForm />
+          </div>
         </div>
-    )
+      </div>
+      <div className="bg-muted relative hidden lg:block">
+        <img
+          src="https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Image"
+          className="absolute inset-0 h-full w-full object-cover blur-"
+        />
+        <div className="absolute inset-0 bg-black opacity-30"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h2 className="text-white text-2xl font-bold text-center px-20 space-y-3">
+            <p>"Every dream starts with a hustle, and every hustle with the courage to take the first step."</p>
+            <p className="font-normal text-lg">Begin yours now, with MockMate.</p>
+          </h2>
+        </div>
+      </div>
+    </div>
+  )
 }
