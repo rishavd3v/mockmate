@@ -14,12 +14,10 @@ export default function Interview() {
     const [loading, setLoading] = useState(!location.state?.interviewData);
     const [questions,setQuestions] = useState(location.state?.interviewData?.mock_json);
     const [answeredQuestions, setAnsweredQuestions] = useState({});
-    const [mockId, setMockId] = useState(mock_id);
     const {user} = useAuth();
     
     const setData = (data) => {
         setQuestions(data.mock_json);
-        setMockId(data.mock_id);
     }
 
     useEffect(()=>{
@@ -36,7 +34,8 @@ export default function Interview() {
     const getInterviewDetails = async () => {
         setLoading(true);
         try{
-            const data = await getInterviewData(mockId);
+            const token = await user.getIdToken();
+            const data = await getInterviewData(mock_id,token);
             setData(data);
         }
         catch(err){
@@ -57,7 +56,7 @@ export default function Interview() {
             <div className='order-2 col-span-2'><QuestionCard question={questions} activeQuestion={activeQuestion} setActiveQuestion={setActiveQuestion} answeredQuestions={answeredQuestions}/></div>
 
             <div className='order-1 md:order-2 col-span-8'>
-                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mockId} setActiveQuestion={setActiveQuestion} onAnswered={(index)=>{setAnsweredQuestions(prev=>({...prev, [index]:true}))}}/>
+                <RecordAnswer question={questions[activeQuestion]} activeQuestion={activeQuestion} mock_id={mock_id} setActiveQuestion={setActiveQuestion} onAnswered={(index)=>{setAnsweredQuestions(prev=>({...prev, [index]:true}))}}/>
             </div>
 
         </div>
