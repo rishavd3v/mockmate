@@ -45,10 +45,8 @@ async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feed
         }
         return result;
     }
-    
     catch(error){
         console.error('Error submitting feedback:', error);
-        res.status(500).send("Error submitting feedback");
     }
 }
 
