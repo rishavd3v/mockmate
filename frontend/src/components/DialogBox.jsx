@@ -43,11 +43,11 @@ export default function DialogBox({showDialog,setShowDialog}){
         let headers = { Authorization: `Bearer ${token}` };
         switch (interviewType) {
             case "technical":
-                url = `${backendUrl}/generate/technical`;
+                url = `/technical`;
                 data = { jobPos, jobDesc, jobExp, type: interviewType };
                 break;
             case "resume":
-                url = `${backendUrl}/generate/resume/`;
+                url = `/resume`;
                 data = new FormData();
                 data.append("resume", resume);
                 data.append("jobPos", jobPos);
@@ -56,18 +56,18 @@ export default function DialogBox({showDialog,setShowDialog}){
                 headers["Content-Type"] = "multipart/form-data";
                 break;
             case "behavioral":
-                url = `${backendUrl}/generate/behavioral`;
+                url = `/behavioral`;
                 data = { role: jobPos };
                 break;
             case "realtime":
-                url = `${backendUrl}/generate/realtime`;
+                url = `/realtime`;
                 data = { session_start: new Date().toISOString() };
                 break;
         }
         try{
             const response = await generateInterview(url, data, headers);
             const {mock_id,job_pos,job_desc,job_exp,mock_json} = response?.interviewData;
-
+            toast.success("Mock interview generated successfully!");
             if (mock_id){
                 setShowDialog(false);
                 navigate(`/interview/${mock_id}`,{state:{interviewData:{job_pos, job_desc, job_exp,mock_json}}});
