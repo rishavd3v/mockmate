@@ -58,7 +58,7 @@ const getFeedback = async (mock_id,token)=>{
 }
 
 const generateInterview = async (url,data,headers)=>{
-    const res = await api.post(url,data,{headers})
+    const res = await api.post(`generate${url}`,data,{headers})
     return res.data;
 }
 
