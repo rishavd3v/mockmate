@@ -89,7 +89,6 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
                 });
                 handleNextQuestion();
                 onAnswered(activeQuestion);
-                resetTranscript();
             }
             catch(err) {
                 console.error("Error saving response:", err);
@@ -97,6 +96,7 @@ export default function RecordAnswer({question,activeQuestion,setActiveQuestion,
                     description: "An error occurred while saving your response. Please try again.",
                 });
             }
+            resetTranscript();
             setSaving(false);
         } 
         else{
