@@ -1,24 +1,6 @@
 import { pool } from "../utils/db.js";
 
-async function saveMockData(uid, mock_json, jobPos, jobDesc, jobExp, type) {    
-    const technicalQuery = `
-        INSERT INTO mock_question (user_id, mock_type, mock_json, job_pos, job_desc, job_exp)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
-    `;
-    const resumeQuery = `
-        INSERT INTO mock_question (user_id, mock_type, mock_json, job_pos, job_exp)
-        VALUES ($1, $2, $3, $4, $5) RETURNING *;
-    `;
-    let result;
-    if( type == 'technical' ){
-        result = await pool.query(technicalQuery, [uid, "Technical", JSON.stringify(mock_json), jobPos, jobDesc, jobExp]);
-    }else if(type == 'resume' ){
-        result = await pool.query(resumeQuery, [uid, "Resume", JSON.stringify(mock_json), jobPos, jobExp]);
-    }
-    return result.rows[0];
-}
-
-async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feedback}){
+export const createFeedback = async ({mock_id, ques_no, ques, ans, user_ans, rating, feedback}) => {
     try{
         const checkQuery = `
             SELECT id FROM feedback
@@ -50,4 +32,25 @@ async function saveFeedback({mock_id, ques_no, ques, ans, user_ans, rating, feed
     }
 }
 
-export {saveMockData, saveFeedback};
+export const getFeedbackFromDB = async (mockId) => {
+    const query = `SELECT * FROM feedback WHERE mock_id = $1 ORDER BY created_at`;
+    try{
+        const result = await pool.query(query, [mockId]);
+        return result.rows || [];
+    }
+    catch (err){
+        throw err;
+    }
+}
+
+export const deleteFeedbackFromDB = async (mockId) => {
+    const query = `DELETE FROM feedback WHERE mock_id = $1`;
+    const updateQuery = `UPDATE mock_question SET attempted = false WHERE mock_id = $1`;
+    try{
+        await pool.query(query,[mockId]);
+        await pool.query(updateQuery,[mockId]);
+    }
+    catch(error){
+        throw err;
+    }
+}

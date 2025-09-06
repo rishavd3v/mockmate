@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS mock_question (
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
-    mock_id VARCHAR(255) NOT NULL,
+    mock_id VARCHAR(255) PRIMARY KEY,
     question_no varchar(1) NOT NULL,
     question TEXT NOT NULL,
     answer TEXT NOT NULL,
